@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=1">
+<meta name="renderer" content="webkit">
+<meta name="google" value="notranslate">
+<meta name="robots" content="index,follow">
+
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="钟俊的博客">
+<meta name="twitter:description" content="记录">
+<meta name="twitter:image:src" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<meta property="og:url" content="http://www.daqu.github.io">
+<meta property="og:title" content="钟俊的博客">
+<meta property="og:description" content="记录">
+<meta property="og:site_name" content="钟俊的博客">
+<meta property="og:image" content="http://www.daqu.github.io/images/avatar.jpg">
+<meta property="og:type" content="website">
+<meta name="robots" content="noodp">
+
+<meta itemprop="name" content="钟俊的博客">
+<meta itemprop="description" content="记录">
+<meta itemprop="image" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<link rel="canonical" href="http://www.daqu.github.io">
+
+<link rel="shortcut icon" href="/favicon.png">
+<link rel="apple-itouch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/bundle/index.css">
+<script type="text/javascript">
+    var timeSinceLang = {
+        year: '年前',
+        month: '个月前',
+        day: '天前',
+        hour: '小时前',
+        minute: '分钟前',
+        second: '秒前'
+    };
+    var root = '';
+</script>
+
+
+        <meta name="keywords" content="日报,研究生,">
+        <meta name="description" content="17-08-14 日报">
+        <meta name="author" content="钟俊">
+        <title>17-08-14 日报</title>
+    </head>
+    <body>
+        <article class="container">
+            <header class="header-wrap">
+  <a class="index" href="/">
+    <img class="logo" src="/images/avatar.jpg" />
+    钟俊的博客
+  </a>
+  <ul class="menu">
+      <li class="menu-item"><a href="/archive.html">归档</a></li>
+      <li class="menu-item"><a href="/tag.html">标签</a></li>
+      <li class="menu-item"><a href="/atom.xml">订阅</a></li>
+  </ul>
+</header>
+
+            <article class="main article">
+                <h1 class="title">17-08-14 日报</h1>
+                <section class="info">
+                    <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    
+                    <span class="date" data-time="1503738000"><span class="from"></span></span>
+                    
+                    <span class="tags"><a class="tag" href="/tag/%e6%97%a5%e6%8a%a5/index.html">日报</a><a class="tag" href="/tag/%e7%a0%94%e7%a9%b6%e7%94%9f/index.html">研究生</a></span>
+                </section>
+                <article class="content"><p>完成的工作~</p>
+
+<ul>
+<li><p>继续阅读weedfs网络部分的代码</p></li>
+
+<li><p>在weedfs上实现软件定义存储的可能性</p></li>
+</ul>
+
+<p>一个weedfs的文件请求从客户端发出到文件读取可以粗略地概括为</p>
+
+<p>文件请求 &ndash;发出&ndash;&gt; Master Server &ndash;转发&ndash;&gt; Volume Server &ndash;查找&ndash;&gt; Volume &ndash;查找&ndash;&gt; 该Volume中的Super block(元数据) &ndash;读取&ndash;&gt; needle</p>
+
+<p>为了在weedfs实现类似storlet的功能，第一步可以先思考如何weedfs满足storlet的依赖。</p>
+
+<p>1.storlet通过一个swift mildleware实现请求拦截与转发，那么weedfs中存在类似的机制么？</p>
+
+<blockquote>
+<p>答案是否定的。</p>
+</blockquote>
+
+<p>2.storlet的特点就是充分利用了存储节点的计算能力，但是这种前提是存储系统必须是分布式的，因为只有分布式，存储节点才能具备有独立的计算能力。</p>
+
+<blockquote>
+<p>weedfs满足这个要求。</p>
+</blockquote>
+
+<p>3.weedfs本身已经是针对小文件优化提出的解决方案，那么在weedfs上实现SDS的好处是什么？</p>
+
+<blockquote>
+<p>weedfs专注于小文件存储问题，小文件的优化策略与文件系统是紧耦合的。SDS的目的在于控制和数据分离，SDS on weedfs不仅能够降低小文件优化与weedfs的耦合度，提高weedfs的通用性，而且用户能够将部分业务逻辑放在存储上实现，降低了上层系统的复杂度。</p>
+</blockquote>
+
+<p>4.如何实现SDS on weedfs?</p>
+
+<blockquote>
+<p>参考swift，在Master Server、Volume Server中加入管道机制。每一个请求在进入server后将像水流过管道一样的遍历filter函数。在所有filter函数执行完之后继续其它工作。</p>
+</blockquote>
+
+<p>5.假如已经有了SDS on weedfs，可以利用它做什么工作？</p>
+
+<blockquote>
+<p>将一些weedfs的功能通过策略的方式实现，比如weedfs允许在请求.jpg格式的文件加入长、宽两个参数，这样返回的jpg文件的格式就是设定好的长宽。然而，目前这个功能是以模块函数的形式实现的，这是没有的耦合度提升。总而言之，通过SDS可以进行降低weedfs复杂度的工作，将一些模块解耦。从而在不减少功能的情况下降低系统复杂度。</p>
+</blockquote>
+
+<p>下一步工作~</p>
+
+<ul>
+<li>继续阅读代码</li>
+<li>尝试边读边实现一个原型？</li>
+</ul>
+</article>
+                <section class="author">
+                    <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    <div class="intro">没有介绍</div>
+                </section>
+                <section class="recommend">
+                    
+                    <section class="nav prev more">
+                        <div class="head">上篇文章</div>
+                        <a class="link" href="/misc/2017/08/15/daqu-8-15.html">17-08-15 日报</a>
+                    </section>
+                    
+                    
+                    <section class="nav next more">
+                        <div class="head">下篇文章</div>
+                        <a class="link" href="/misc/2017/08/11/daqu-8-11.html">17-08-11 日报</a>
+                    </section>
+                    
+                </section>
+                
+    <section id="disqus_thread"></section>
+    <script type="text/javascript">
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//username.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+
+
+            </article>
+        </article>
+        <footer class="footer">
+    <span class="copyright">
+        钟俊的博客 ©
+        <script type="text/javascript">
+            document.write(new Date().getFullYear());
+        </script>
+    </span>
+    <span class="publish">Powered by <a href="http://www.chole.io/" target="_blank">Ink</a></span>
+</footer>
+
+        <script src="/bundle/index.js"></script>
+    </body>
+</html>

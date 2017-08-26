@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
+  <title>钟俊的博客</title>
+  <id>http://www.daqu.github.io</id>
+  <updated>2017-08-26T23:05:02+08:00</updated>
+  <subtitle>记录</subtitle>
+  <link href="http://www.daqu.github.io"></link>
+  <author>
+    <name>钟俊的博客</name>
+  </author>
+  <entry>
+    <title>从测试看storlet的部署流程</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/从测试看storlet的部署过程.html</id>
+    <content type="html">&lt;p&gt;从测试的角度分析storlet是怎么运行的&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/从测试看storlet的部署过程.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>weedfs生命流程</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/weedfs生命流程.html</id>
+    <content type="html">&lt;p&gt;seaweedfs的生命流程&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/weedfs生命流程.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>seaweedfs简单介绍</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs简单介绍.html</id>
+    <content type="html">&lt;p&gt;seaweedfs简单介绍&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs简单介绍.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>seaweedfs源码阅读(二)</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs源码阅读(二).html</id>
+    <content type="html">&lt;p&gt;seaweedfs早期版本分析&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs源码阅读(二).html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>seaweedfs源码阅读(一)</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs源码阅读(一).html</id>
+    <content type="html">&lt;p&gt;seaweedfs存储模块分析&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs源码阅读(一).html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>openstack storlet简单介绍</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/openstack storlet简单介绍.html</id>
+    <content type="html">&lt;p&gt;storlet的特点、是怎么被调用的、是怎么部署的&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/openstack storlet简单介绍.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>SDS原型（二）</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/sds原型(二).html</id>
+    <content type="html">&lt;p&gt;sds目前的方案以及存在的问题&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/sds原型(二).html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>SDS原型（一）</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/sds原型(一).html</id>
+    <content type="html">&lt;p&gt;sds目前的情况&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/sds原型(一).html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>17-08-25  日报</title>
+    <updated>2017-08-26T17:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/25/daqu-8-25.html</id>
+    <content type="html">&lt;p&gt;写了一篇输出，研究了elixir的分布式存储的例子&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/25/daqu-8-25.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>17-08-24  日报</title>
+    <updated>2017-08-26T17:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/24/daqu-8-24.html</id>
+    <content type="html">&lt;p&gt;写了两篇输出&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/24/daqu-8-24.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+</feed>

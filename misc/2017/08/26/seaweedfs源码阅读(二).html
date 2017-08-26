@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=1">
+<meta name="renderer" content="webkit">
+<meta name="google" value="notranslate">
+<meta name="robots" content="index,follow">
+
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="钟俊的博客">
+<meta name="twitter:description" content="记录">
+<meta name="twitter:image:src" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<meta property="og:url" content="http://www.daqu.github.io">
+<meta property="og:title" content="钟俊的博客">
+<meta property="og:description" content="记录">
+<meta property="og:site_name" content="钟俊的博客">
+<meta property="og:image" content="http://www.daqu.github.io/images/avatar.jpg">
+<meta property="og:type" content="website">
+<meta name="robots" content="noodp">
+
+<meta itemprop="name" content="钟俊的博客">
+<meta itemprop="description" content="记录">
+<meta itemprop="image" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<link rel="canonical" href="http://www.daqu.github.io">
+
+<link rel="shortcut icon" href="/favicon.png">
+<link rel="apple-itouch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/bundle/index.css">
+<script type="text/javascript">
+    var timeSinceLang = {
+        year: '年前',
+        month: '个月前',
+        day: '天前',
+        hour: '小时前',
+        minute: '分钟前',
+        second: '秒前'
+    };
+    var root = '';
+</script>
+
+
+        <meta name="keywords" content="输出,sds,seaweedfs,">
+        <meta name="description" content="seaweedfs源码阅读(二)">
+        <meta name="author" content="钟俊">
+        <title>seaweedfs源码阅读(二)</title>
+    </head>
+    <body>
+        <article class="container">
+            <header class="header-wrap">
+  <a class="index" href="/">
+    <img class="logo" src="/images/avatar.jpg" />
+    钟俊的博客
+  </a>
+  <ul class="menu">
+      <li class="menu-item"><a href="/archive.html">归档</a></li>
+      <li class="menu-item"><a href="/tag.html">标签</a></li>
+      <li class="menu-item"><a href="/atom.xml">订阅</a></li>
+  </ul>
+</header>
+
+            <article class="main article">
+                <h1 class="title">seaweedfs源码阅读(二)</h1>
+                <section class="info">
+                    <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    
+                    <span class="date" data-time="1503756000"><span class="from"></span></span>
+                    
+                    <span class="tags"><a class="tag" href="/tag/%e8%be%93%e5%87%ba/index.html">输出</a><a class="tag" href="/tag/sds/index.html">sds</a><a class="tag" href="/tag/seaweedfs/index.html">seaweedfs</a></span>
+                </section>
+                <article class="content"><h1>seaweedfs源码阅读(二)</h1>
+
+<h2>1.简要介绍</h2>
+
+<p>如果是阅读一个成熟的项目，最好是先阅读早期的版本，因为阅读一个项目的重点在于理解其思想。比如Linux，Linux目前的版本(4.x)的代码规模已经达到几百万行，阅读这样一个庞然大物的难度是无法想象的。但是Linux 0.11版本的规模只有2万行，可谓是小巧玲珑，从这个版本出发可谓是省时省力。seaweedfs也是一样，因此这次来简单介绍一下seaweedfs早期版本<code>2011-12-13 08:17 53814</code>。</p>
+
+<h2>2.要解决的任务</h2>
+
+<p>可以简单的分为两类，一个是如何处理http请求，另外一个是如何将数据存储。具体点说，前者要是实现基于http的文件接口，包括查找、下载、上传。这里的难点在于如何处理文件的上传。后者的目的是为了将文件比如文本文件与逻辑结构Needle对应起来，并将其写入到Volume中。</p>
+
+<h2>3.解决的思路</h2>
+
+<p>网络请求通过golang的标准库中的路由组件进行处理，一个请求在被处理后调用存储模块相应的函数并进行相关的任务。</p>
+
+<h2>4.怎么存储</h2>
+
+<p>先从存储的最小单位Needle说起，在weedfs中needle是存储的“原子”。举个例子，要将一张已经上传的图片存储到weedfs中该怎么做呢？</p>
+
+<ol>
+<li>拿到一张图片，这个条件已经满足了。</li>
+<li>新建一个Needle。注意，这里的Needle还不是图片，它只是一群字段的集合，只是一段内存而已</li>
+</ol>
+
+<pre><code class="language-go">  Cookie uint8 &quot;用于唯一标识&quot;
+  Key uint64 &quot;文件ID&quot;
+  AlternateKey uint32 &quot;额外文件id&quot;
+  Size uint32 &quot;数据大小&quot;
+  Data []byte &quot;存储数据&quot;
+  Checksum int32 &quot;校验码&quot;
+  Padding []byte &quot;Aligned to 8 bytes&quot;
+</code></pre>
+
+<p>一个Needle是由Cookie+Key+AltKey三者组合并唯一标识的，Size和Data用于保存数据，在这里目前这两个字段为空，最后的Checksum和Padding用于校验</p>
+
+<ol>
+<li>将Needle和图片对应起来。怎么对应，将图片写入到Needle.Data和补充完Needle.Size就可以了。注意这里写入的是图片对应的字节流。</li>
+<li>现在已经有一个Needle，并且这个Needle也存储有对应的图片了。下一步该做什么呢？<strong><em>注册</em></strong>！每一个Needle都要向Needle_Map注册，只有这样才能找得到它们。因为每一个Needle都要被存储到一个大文件比如某个Volume服务器上的某个Volume中。在这里，Volume就代表一个大文件。当Needle存储在大文件中时，从物理实质看，每一个needle都是被顺序追加写入到大文件的末尾。那么，Needle_Map怎么找到它们呢？每一个Needle_Map维护着一个哈希表，它的键是Needle的key，它的值是一个叫做NeedleValue的数据结构，它的定义如下</li>
+</ol>
+
+<pre><code class="language-go">type NeedleValue struct{
+  Offset uint32 &quot;Volume offset&quot; //since aligned to 8 bytes, range is 4G*8=32G
+  Size uint32 &quot;Size of the data portion&quot;
+}
+</code></pre>
+
+<p>该怎么理解这个结构呢？它其实是Needle在Volume上的存储标识。为什么这么说?因为要在Volume上找到一个Needle事实上只需要知道你在哪里开始存储的，你的大小是多少。知道这两点我就可以找到你。</p>
+
+<ol>
+<li>现在，我们已经有了一个Needle和一个Needle_Map。那么下一步就是找一个Volume。如果没有Volume咋办，创建一个!那么一个Volume长啥样啊?</li>
+</ol>
+
+<pre><code class="language-go">type Volume struct {
+	Id                  uint64	//标识
+	dir                 string	//所在目录
+	dataFile, indexFile *os.File	//对应的大文件和索引文件
+	nm                  *NeedleMap	//needleMap
+
+	accessChannel chan int	//用于各Volume通信和master通信
+}
+</code></pre>
+
+<p>一个Volume起到的作用主要是存储和维护。存储needle和这个Volume的元数据信息。维护主要是和主节点保持通信</p>
+
+<ol>
+<li>现在已经有Volume了，但是还是不能存储，为啥？因为找不到！因此我们还需要一个类似Needle_Map的东西也就是Volume_Map。对于每一个Volume来说，它只会记录它在哪个目录和有哪些needle。但是这对于找到它来说远远不够，是的我知道你这个Volume在哪个目录。但是是哪台电脑的目录啊？这个目录下可能有多个Volume，哪一个是你哇？这个问题就是由Volume_Map来解决的？它的结构如下</li>
+</ol>
+
+<pre><code class="language-go">type Mapper struct {
+	dir              string	//map文件在哪个目录
+	FileName         string	//哪个是map文件
+	Id2Machine map[uint32][]*Machine
+	LastId uint32
+}
+</code></pre>
+
+<p>在这个版本中，Volume_Map维护一个directorymap文件。这个文件告诉程序该如何找到它要找的Volume。</p>
+
+<p>7.现在Needle，Needle_Map，Volume，Volume_Map都有了，程序终于知道怎么找到一张图片</p>
+
+<pre><code>网络操作··· ···
+-&gt;Volume_Map（找Volume）
+-&gt;Volume（找Needle_Map）
+-&gt;Needle_Map（根据key找到value，也就是needle在volume中的位置）
+-&gt;根据Needle_Map的信息从Volume中读取字节流
+-&gt;字节流转换
+-&gt;拿到Needle
+-&gt;读取Needle代表的文件
+</code></pre>
+
+<p>因此，程序可以放心地将图片存储到needle中。也就是执行Needle.write函数。</p>
+
+<p>至此，一个文件的存储工作就完成了。</p>
+
+<h2>5.怎么发送文件请求</h2>
+
+<p>前面介绍了文件是怎么存储的，但是就使用来说还有一个问题。就是我的使用请求怎么发出去啊？在这个版本中，weedfs的思路很简单，每一个文件请求都是HTTP请求。weedfs会将HTTP请求转换为相应模块的函数调用。</p>
+
+<h2>6.总结</h2>
+
+<p>这次解读了weedfs的早期版本，功能很简陋，但是核心功能已经实现了，网络到存储这部分的功能已经基本实现，但是用户到网络的部分只能说有个原型。</p>
+</article>
+                <section class="author">
+                    <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    <div class="intro">没有介绍</div>
+                </section>
+                <section class="recommend">
+                    
+                    <section class="nav prev more">
+                        <div class="head">上篇文章</div>
+                        <a class="link" href="/misc/2017/08/26/seaweedfs%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d.html">seaweedfs简单介绍</a>
+                    </section>
+                    
+                    
+                    <section class="nav next more">
+                        <div class="head">下篇文章</div>
+                        <a class="link" href="/misc/2017/08/26/seaweedfs%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%28%e4%b8%80%29.html">seaweedfs源码阅读(一)</a>
+                    </section>
+                    
+                </section>
+                
+    <section id="disqus_thread"></section>
+    <script type="text/javascript">
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//username.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+
+
+            </article>
+        </article>
+        <footer class="footer">
+    <span class="copyright">
+        钟俊的博客 ©
+        <script type="text/javascript">
+            document.write(new Date().getFullYear());
+        </script>
+    </span>
+    <span class="publish">Powered by <a href="http://www.chole.io/" target="_blank">Ink</a></span>
+</footer>
+
+        <script src="/bundle/index.js"></script>
+    </body>
+</html>

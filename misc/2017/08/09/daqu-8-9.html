@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=1">
+<meta name="renderer" content="webkit">
+<meta name="google" value="notranslate">
+<meta name="robots" content="index,follow">
+
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="钟俊的博客">
+<meta name="twitter:description" content="记录">
+<meta name="twitter:image:src" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<meta property="og:url" content="http://www.daqu.github.io">
+<meta property="og:title" content="钟俊的博客">
+<meta property="og:description" content="记录">
+<meta property="og:site_name" content="钟俊的博客">
+<meta property="og:image" content="http://www.daqu.github.io/images/avatar.jpg">
+<meta property="og:type" content="website">
+<meta name="robots" content="noodp">
+
+<meta itemprop="name" content="钟俊的博客">
+<meta itemprop="description" content="记录">
+<meta itemprop="image" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<link rel="canonical" href="http://www.daqu.github.io">
+
+<link rel="shortcut icon" href="/favicon.png">
+<link rel="apple-itouch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/bundle/index.css">
+<script type="text/javascript">
+    var timeSinceLang = {
+        year: '年前',
+        month: '个月前',
+        day: '天前',
+        hour: '小时前',
+        minute: '分钟前',
+        second: '秒前'
+    };
+    var root = '';
+</script>
+
+
+        <meta name="keywords" content="日报,研究生,">
+        <meta name="description" content="17-08-09  日报">
+        <meta name="author" content="钟俊">
+        <title>17-08-09  日报</title>
+    </head>
+    <body>
+        <article class="container">
+            <header class="header-wrap">
+  <a class="index" href="/">
+    <img class="logo" src="/images/avatar.jpg" />
+    钟俊的博客
+  </a>
+  <ul class="menu">
+      <li class="menu-item"><a href="/archive.html">归档</a></li>
+      <li class="menu-item"><a href="/tag.html">标签</a></li>
+      <li class="menu-item"><a href="/atom.xml">订阅</a></li>
+  </ul>
+</header>
+
+            <article class="main article">
+                <h1 class="title">17-08-09  日报</h1>
+                <section class="info">
+                    <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    
+                    <span class="date" data-time="1503738000"><span class="from"></span></span>
+                    
+                    <span class="tags"><a class="tag" href="/tag/%e6%97%a5%e6%8a%a5/index.html">日报</a><a class="tag" href="/tag/%e7%a0%94%e7%a9%b6%e7%94%9f/index.html">研究生</a></span>
+                </section>
+                <article class="content"><h1>完成的工作~</h1>
+
+<ul>
+<li>阅读seaweedfs的storage部分代码，但是只完成了两个文件的阅读。进度缓慢</li>
+<li>复习了<a href="http://blog.csdn.net/endlu/article/details/51720299">btree</a>，因为seaweedfs用这个作为文件的数据结构。具体可见<code>storage/needle/btree_map.go</code></li>
+</ul>
+
+<p>谷歌就btree写了一个golang 包，能够基于内存实现btree。然后seaweedfs用btree作为数据结构来维护文件。</p>
+
+<pre><code class="language-go">func NewBtreeMap() *BtreeMap {
+	return &amp;BtreeMap{
+		tree: btree.New(32),
+	}
+}
+
+func (cm *BtreeMap) Set(key Key, offset, size uint32) (oldOffset, oldSize uint32) {
+	found := cm.tree.ReplaceOrInsert(NeedleValue{key, offset, size})
+	if found != nil {
+		old := found.(NeedleValue)
+		return old.Offset, old.Size
+	}
+	return
+}
+
+··· ···
+</code></pre>
+
+<p>上面是weed中关于btree的部分，可以看到这部分负责创建btree的实例。然后weedfs将它与文件对应起来。在<code>needle_map.go</code>中</p>
+
+<pre><code class="language-go">type NeedleMapper interface {
+	Put(key uint64, offset uint32, size uint32) error
+	Get(key uint64) (element *needle.NeedleValue, ok bool)
+	Delete(key uint64, offset uint32) error
+	Close()
+	Destroy() error
+	ContentSize() uint64
+	DeletedSize() uint64
+	FileCount() int
+	DeletedCount() int
+	MaxFileKey() uint64
+	IndexFileSize() uint64
+	IndexFileContent() ([]byte, error)
+	IndexFileName() string
+}
+</code></pre>
+
+<p>作者设置了NeedleMapper接口。因为前面btree模块中实现了这个接口中的Put、Get方法。这样Btree实例就可以通过这个接口和文件关联起来。</p>
+
+<ul>
+<li>复习了golang的一些语法，在阅读过程中复习的</li>
+<li>将weedfs在windows下的环境搭建作了总结</li>
+</ul>
+
+<h2>待完成的工作~</h2>
+
+<ol>
+<li>继续阅读seaweedfs</li>
+</ol>
+</article>
+                <section class="author">
+                    <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    <div class="intro">没有介绍</div>
+                </section>
+                <section class="recommend">
+                    
+                    <section class="nav prev more">
+                        <div class="head">上篇文章</div>
+                        <a class="link" href="/misc/2017/08/10/daqu-8-10.html">17-08-10  日报</a>
+                    </section>
+                    
+                    
+                    <section class="nav next more">
+                        <div class="head">下篇文章</div>
+                        <a class="link" href="/misc/2017/08/08/daqu-8-8.html">17-08-08  日报</a>
+                    </section>
+                    
+                </section>
+                
+    <section id="disqus_thread"></section>
+    <script type="text/javascript">
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//username.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+
+
+            </article>
+        </article>
+        <footer class="footer">
+    <span class="copyright">
+        钟俊的博客 ©
+        <script type="text/javascript">
+            document.write(new Date().getFullYear());
+        </script>
+    </span>
+    <span class="publish">Powered by <a href="http://www.chole.io/" target="_blank">Ink</a></span>
+</footer>
+
+        <script src="/bundle/index.js"></script>
+    </body>
+</html>
