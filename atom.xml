@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-08-26T23:16:28+08:00</updated>
+  <updated>2017-08-28T01:53:28+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
   <entry>
-    <title>17-08-26 日报</title>
-    <updated>2017-08-26T23:13:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/daqu-8-26.html</id>
-    <content type="html">&lt;p&gt;搭了一个静态博客，学习OTP中的知识&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/daqu-8-26.html"></link>
+    <title>17-08-27 日报</title>
+    <updated>2017-08-28T01:52:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-28:/misc/2017/08/28/daqu-8-27.html</id>
+    <content type="html">&lt;p&gt;仔细研究OTP&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/28/daqu-8-27.html"></link>
     <author>
       <name>钟俊</name>
     </author>
   </entry>
   <entry>
-    <title>从测试看storlet的部署流程</title>
-    <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/从测试看storlet的部署过程.html</id>
-    <content type="html">&lt;p&gt;从测试的角度分析storlet是怎么运行的&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/从测试看storlet的部署过程.html"></link>
+    <title>17-08-26 日报</title>
+    <updated>2017-08-26T23:13:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/daqu-8-26.html</id>
+    <content type="html">&lt;p&gt;搭了一个静态博客，学习OTP中的知识&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/daqu-8-26.html"></link>
     <author>
       <name>钟俊</name>
     </author>
@@ -98,11 +98,11 @@
     </author>
   </entry>
   <entry>
-    <title>17-08-25  日报</title>
-    <updated>2017-08-26T17:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/25/daqu-8-25.html</id>
-    <content type="html">&lt;p&gt;写了一篇输出，研究了elixir的分布式存储的例子&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/25/daqu-8-25.html"></link>
+    <title>从测试看storlet的部署流程</title>
+    <updated>2017-08-26T22:00:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/从测试看storlet的部署过程.html</id>
+    <content type="html">&lt;p&gt;从测试的角度分析storlet是怎么运行的&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/从测试看storlet的部署过程.html"></link>
     <author>
       <name>钟俊</name>
     </author>
