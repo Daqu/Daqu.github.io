@@ -45,10 +45,10 @@
 </script>
 
 
-        <meta name="keywords" content="日报,研究生,">
-        <meta name="description" content="17-08-26 日报">
+        <meta name="keywords" content="输出,seaweedfs,sds,">
+        <meta name="description" content="将seaweedfs变成SDS的思路">
         <meta name="author" content="钟俊">
-        <title>17-08-26 日报</title>
+        <title>将seaweedfs变成SDS的思路</title>
     </head>
     <body>
         <article class="container">
@@ -65,20 +65,47 @@
 </header>
 
             <article class="main article">
-                <h1 class="title">17-08-26 日报</h1>
+                <h1 class="title">将seaweedfs变成SDS的思路</h1>
                 <section class="info">
                     <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
                     <a class="name" href="/about.me.html">钟俊</a>
                     
-                    <span class="date" data-time="1503760380"><span class="from"></span></span>
+                    <span class="date" data-time="1503992880"><span class="from"></span></span>
                     
-                    <span class="tags"><a class="tag" href="/tag/%e6%97%a5%e6%8a%a5/index.html">日报</a><a class="tag" href="/tag/%e7%a0%94%e7%a9%b6%e7%94%9f/index.html">研究生</a></span>
+                    <span class="tags"><a class="tag" href="/tag/%e8%be%93%e5%87%ba/index.html">输出</a><a class="tag" href="/tag/seaweedfs/index.html">seaweedfs</a><a class="tag" href="/tag/sds/index.html">sds</a></span>
                 </section>
-                <article class="content"><h1>完成的工作~</h1>
+                <article class="content"><h1>将seaweedfs变成SDS的思路</h1>
 
-<p>1.构建一个静态博客用来存储日报和输出</p>
+<p>seaweedfs变成SDS的思路总结一下就是</p>
 
-<p>2.完成mix和otp分布式存储第三到第五部分。对OTP中的agent，genserver，supervisor以及ETS有了初步的了解</p>
+<ol>
+<li>先调整而不是重构，不修改功能</li>
+<li>先调整架构，再调整模块</li>
+</ol>
+
+<h2>1.分层</h2>
+
+<p>将各功能模块按照<a href="https://baike.baidu.com/item/MVC%E6%A1%86%E6%9E%B6/9241230?fr=aladdin&amp;fromid=85990&amp;fromtitle=MVC">MVC</a>的设计理念分为控制、数据层</p>
+
+<p><strong>问题</strong>：seaweedfs中的网络部分倾向于控制，文件部分倾向于数据。但是按照这种思路处理无法解决在SDS原型(二)中提到的问题，就是网络请求转为文件请求后，从文件请求开始到文件响应发出这部分无法做控制。原因是按照MVC的思想，文件部分已经是数据层了，从网络应用的角度来说这是对的，但是从存储系统来说这是不对的，因为在底层的文件读取函数被调用前发生的过程都可以算入控制。</p>
+
+<p>总结一下，MVC思想分层的问题在于控制层太小，数据层太大。</p>
+
+<h2>2.管道化</h2>
+
+<p>将seaweedfs的一次请求-响应的过程看成是请求流入管道，并最终流出管道成为响应的过程。SDS的控制体现在数据在经过管道时会发生变化，管子组合在一起形成管道，也就是控制层。</p>
+
+<p><strong>问题</strong>：管道是个很抽象的概念，如何将seaweedfs中一次请求-响应的过程抽象为一个操作序列是个问题。举个例子，比如seaweedfs的网络部分已经被看成是一个管子，这根管子负责网络请求的收发和转化。为了更细腻的控制，可以将这根管子拆成更多的管子。为了更清晰的架构，可以将这根管子和其它管子组合成更大的管子。问题就是，如何描述这种机制，用管子组成管道的机制。</p>
+
+<p>总结一下，管道化难以抽象。</p>
+
+<h2>3.插件化</h2>
+
+<p>将seaweedfs看成是一块插满插头的插座。将各功能模块看成是插头，将要实现的控制层看成是插座。插座加插头形成seaweedfs。他的特点在于各功能模块之间的耦合度很低。</p>
+
+<p><strong>问题</strong>：根据插件化的介绍，数据层变得模糊，或者是数据层重要性不如控制层重要，因为它只是个插头，虽然没了这个插头不行。但从架构上说好像不大好。</p>
+
+<p>总结一下，先不提实现难度，优点和缺点都不突出。</p>
 </article>
                 <section class="author">
                     <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
@@ -87,15 +114,10 @@
                 </section>
                 <section class="recommend">
                     
-                    <section class="nav prev more">
-                        <div class="head">上篇文章</div>
-                        <a class="link" href="/misc/2017/08/28/daqu-8-27.html">17-08-27 日报</a>
-                    </section>
                     
-                    
-                    <section class="nav next more">
+                    <section class="nav next">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/misc/2017/08/26/seaweedfs%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%28%e4%ba%8c%29.html">seaweedfs源码阅读(二)</a>
+                        <a class="link" href="/misc/2017/08/29/%e4%bd%bf%e7%94%a8elixir%e6%9d%a5%e5%bc%80%e5%8f%91%e4%b8%80%e4%b8%aa%e5%88%86%e5%b8%83%e5%bc%8f%e5%ad%98%e5%82%a8%e7%b3%bb%e7%bb%9f.html">使用elixir来开发一个分布式存储系统</a>
                     </section>
                     
                 </section>

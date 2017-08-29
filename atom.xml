@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-08-29T12:16:20+08:00</updated>
+  <updated>2017-08-29T15:48:48+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
+  <entry>
+    <title>将seaweedfs变成SDS的思路</title>
+    <updated>2017-08-29T15:48:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-29:/misc/2017/08/29/将seaweedfs变成sds的思路.html</id>
+    <content type="html">&lt;p&gt;seaweedfs变成SDS的思路&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/29/将seaweedfs变成sds的思路.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
   <entry>
     <title>使用elixir来开发一个分布式存储系统</title>
     <updated>2017-08-29T12:15:00+08:00</updated>
@@ -43,16 +53,6 @@
     <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/daqu-8-26.html</id>
     <content type="html">&lt;p&gt;搭了一个静态博客，学习OTP中的知识&amp;hellip;&lt;/p&gt;&#xA;</content>
     <link href="http://www.daqu.github.io/misc/2017/08/26/daqu-8-26.html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>seaweedfs简单介绍</title>
-    <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs简单介绍.html</id>
-    <content type="html">&lt;p&gt;seaweedfs简单介绍&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs简单介绍.html"></link>
     <author>
       <name>钟俊</name>
     </author>
@@ -98,11 +98,11 @@
     </author>
   </entry>
   <entry>
-    <title>SDS原型（一）</title>
+    <title>从测试看storlet的部署流程</title>
     <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/sds原型(一).html</id>
-    <content type="html">&lt;p&gt;sds目前的情况&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/sds原型(一).html"></link>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/从测试看storlet的部署过程.html</id>
+    <content type="html">&lt;p&gt;从测试的角度分析storlet是怎么运行的&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/从测试看storlet的部署过程.html"></link>
     <author>
       <name>钟俊</name>
     </author>
