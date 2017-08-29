@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=1">
+<meta name="renderer" content="webkit">
+<meta name="google" value="notranslate">
+<meta name="robots" content="index,follow">
+
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="钟俊的博客">
+<meta name="twitter:description" content="记录">
+<meta name="twitter:image:src" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<meta property="og:url" content="http://www.daqu.github.io">
+<meta property="og:title" content="钟俊的博客">
+<meta property="og:description" content="记录">
+<meta property="og:site_name" content="钟俊的博客">
+<meta property="og:image" content="http://www.daqu.github.io/images/avatar.jpg">
+<meta property="og:type" content="website">
+<meta name="robots" content="noodp">
+
+<meta itemprop="name" content="钟俊的博客">
+<meta itemprop="description" content="记录">
+<meta itemprop="image" content="http://www.daqu.github.io/images/avatar.jpg">
+
+<link rel="canonical" href="http://www.daqu.github.io">
+
+<link rel="shortcut icon" href="/favicon.png">
+<link rel="apple-itouch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/bundle/index.css">
+<script type="text/javascript">
+    var timeSinceLang = {
+        year: '年前',
+        month: '个月前',
+        day: '天前',
+        hour: '小时前',
+        minute: '分钟前',
+        second: '秒前'
+    };
+    var root = '';
+</script>
+
+
+        <meta name="keywords" content="输出,elixir,otp,">
+        <meta name="description" content="使用elixir来开发一个分布式存储系统">
+        <meta name="author" content="钟俊">
+        <title>使用elixir来开发一个分布式存储系统</title>
+    </head>
+    <body>
+        <article class="container">
+            <header class="header-wrap">
+  <a class="index" href="/">
+    <img class="logo" src="/images/avatar.jpg" />
+    钟俊的博客
+  </a>
+  <ul class="menu">
+      <li class="menu-item"><a href="/archive.html">归档</a></li>
+      <li class="menu-item"><a href="/tag.html">标签</a></li>
+      <li class="menu-item"><a href="/atom.xml">订阅</a></li>
+  </ul>
+</header>
+
+            <article class="main article">
+                <h1 class="title">使用elixir来开发一个分布式存储系统</h1>
+                <section class="info">
+                    <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    
+                    <span class="date" data-time="1503980100"><span class="from"></span></span>
+                    
+                    <span class="tags"><a class="tag" href="/tag/%e8%be%93%e5%87%ba/index.html">输出</a><a class="tag" href="/tag/elixir/index.html">elixir</a><a class="tag" href="/tag/otp/index.html">otp</a></span>
+                </section>
+                <article class="content"><h1>使用elixir来开发一个分布式存储系统</h1>
+
+<p>erlang作为一门老语言，在分布式架构越来越流行的今天，它正在重焕光彩。在分布式系统中各节点如何通信以及共享状态其实是一个问题，比如openstack swift的各存储节点之间为了保证存储状态的一致，除了通过一致性算法制定策略外，还需要强有力的通信机制来保证通信质量。erlang在这方面有架构上的优势，而它的OTP则为编写高性能、高容错的分布式应用提供一个框架。elixir是基于erlang vm的语言，它封装了许多erlang的操作，它可以与erlang无缝配合，它可以说是更好的erlang。leofs、亚马逊的riak都是用erlang构建的存储系统。下面，笔者将简单介绍如何使用elixir开发一个分布式存储系统，这是对elixir 的一个教学例子的总结。</p>
+
+<h2>OTP是什么</h2>
+
+<p>OTP是一套应用框架，它阐述了如何在erlang 虚拟机上开发一个完整的应用。OTP是Open Telecom Platform的缩写。</p>
+
+<blockquote>
+<p>OTP的中心思想就是把程序的通用部分和业务部分切开，我帮你把通用部分做好，你做你的业务逻辑就行了。如果你看过一些分布式系统，最火的应该是分布式存储系统了，像Amazon的Dynamo、Google的Bigtable、LiveJournal的memcache等，就知道保证分布式系统的容错能力、数据一致性、请求高并发性是非常困难的。但是他们所用的算法都非常固定，当你去实现另一个分布式系统时，很可能就是参考他们的算法。然后一些技术功底不够的程序员就想，要是能把这些基础的设施都做好，并且提供插件扩展，那多好啊，这样当我想写个分布式数据库的时候就能跟写普通数据库一样简单了。没错，OTP就是帮你干那些又脏又累的活。</p>
+</blockquote>
+
+<h2>在Elixir中使用otp</h2>
+
+<p>elixir中要使用otp主要用到以下几种抽象</p>
+
+<ul>
+<li>state</li>
+<li>agent</li>
+<li>gen_server</li>
+<li>supervisor</li>
+</ul>
+
+<p>由于erlang是纯函数式编程语言，因此变量都是一次赋值后便不可变的。但在业务场景中，经常要修改结果。因此erlang提供了抽象state，它可以保存一些结果并允许被修改。</p>
+
+<p>agent相当于是对state的进一步封装，并且agent提供了一系列操作state的函数。</p>
+
+<p>gen_server顾名思义，它其实是一个服务器。它可以处理各种agent的请求。不仅如此，gen_server还可以起到客户端的作用。它可以对agent进一步封装。经常出现的情况就是封装了agent的genserver(客户端)与genserver(服务器)交互。</p>
+
+<p>supervisor用于监督进程。在OTP中，有这样一种哲学，&rdquo;忽略错误，重启就好&rdquo;。如果一个erlang 进程crash了，那么就让它崩溃就行了，然后再重启就OK。supervisor就是起到监督进程状态，如果进程崩溃，就做出相应的处理。</p>
+
+<h2>在elixir中使用otp开发分布式存储</h2>
+
+<p>既然otp把基础设施都搭好了，那么使用otp开发一个应用的思路是啥。</p>
+
+<ol>
+<li>编写各功能模块</li>
+<li>通过Agent来保存state，state就是各种结果</li>
+<li>通过Genserver来实现通信</li>
+<li>通过supervisor来保证程序正常运行</li>
+</ol>
+
+<p>由于OTP是一套框架，因此对于分布式和非分布式应用。开发的思路是一样的，也就是说上述的思路不仅可以开发非分布式应用，还可以开发分布式应用。并且架构不用发生太多改变。</p>
+
+<h2>otp的特点</h2>
+
+<p>使用otp来开发程序和一般的程序开发流程有较大不同，主要体现在结果的处理和错误的处理。</p>
+
+<h3>结果的处理</h3>
+
+<p>otp，或者说erlang更准确一点。其实是没有变量这个概念的，因为变量都是赋值之后不可变的，换句话说就是常量了。对于函数的返回结果，erlang的描述是message，也就是消息。在笔者看来，erlang把每一个erlang 进程都看成是一个邮递员，函数的调用则意味着告诉邮递员，也就是调用这个函数的进程应该如何和别的邮递员通信。每一个邮递员都有一个mailbox(邮箱)，邮箱中会储存其它邮递员发给这个邮递员的消息，但mailbox的中的信息不是长久的，收到下一封信的时候信箱中的消息就被扔掉了。所以需要state这样的机制来保存结果。</p>
+
+<p>在otp中，一个应用的运行事实上是多个erlang 进程相互通信的过程，直白一点就是一群邮递员相互传递信件的过程。这简直就是天然的分布式架构。</p>
+
+<h3>错误的处理</h3>
+
+<p>otp中对待错误的观点是不管它，我只要能保证崩溃后还能重启就行了。因此它不会像其它的语言那样try catch final，而是用一个或多个进程去监督一个或多个进程，一旦它们崩溃，就按照设定的步骤重启它。</p>
+
+<h2>最后</h2>
+
+<p>如果感兴趣，可以看看<a href="https://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html">官方的例子</a></p>
+</article>
+                <section class="author">
+                    <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
+                    <a class="name" href="/about.me.html">钟俊</a>
+                    <div class="intro">没有介绍</div>
+                </section>
+                <section class="recommend">
+                    
+                    
+                    <section class="nav next">
+                        <div class="head">下篇文章</div>
+                        <a class="link" href="/misc/2017/08/28/daqu-8-28.html">17-08-28 日报</a>
+                    </section>
+                    
+                </section>
+                
+    <section id="disqus_thread"></section>
+    <script type="text/javascript">
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//username.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+
+
+            </article>
+        </article>
+        <footer class="footer">
+    <span class="copyright">
+        钟俊的博客 ©
+        <script type="text/javascript">
+            document.write(new Date().getFullYear());
+        </script>
+    </span>
+    <span class="publish">Powered by <a href="http://www.chole.io/" target="_blank">Ink</a></span>
+</footer>
+
+        <script src="/bundle/index.js"></script>
+    </body>
+</html>
