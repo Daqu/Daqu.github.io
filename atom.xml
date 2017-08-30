@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-08-29T15:48:48+08:00</updated>
+  <updated>2017-08-30T16:20:51+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
+  <entry>
+    <title>17-08-30 日报</title>
+    <updated>2017-08-30T16:22:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-30:/misc/2017/08/30/daqu-8-30.html</id>
+    <content type="html">&lt;p&gt;将SDS原型(三)推进了一部分&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/30/daqu-8-30.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>17-08-29 日报</title>
+    <updated>2017-08-29T16:22:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-08-29:/misc/2017/08/29/daqu-8-29.html</id>
+    <content type="html">&lt;p&gt;效率不高&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/29/daqu-8-29.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
   <entry>
     <title>将seaweedfs变成SDS的思路</title>
     <updated>2017-08-29T15:48:00+08:00</updated>
@@ -58,16 +78,6 @@
     </author>
   </entry>
   <entry>
-    <title>seaweedfs源码阅读(二)</title>
-    <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs源码阅读(二).html</id>
-    <content type="html">&lt;p&gt;seaweedfs早期版本分析&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs源码阅读(二).html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
     <title>seaweedfs源码阅读(一)</title>
     <updated>2017-08-26T22:00:00+08:00</updated>
     <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs源码阅读(一).html</id>
@@ -78,21 +88,11 @@
     </author>
   </entry>
   <entry>
-    <title>openstack storlet简单介绍</title>
+    <title>seaweedfs源码阅读(二)</title>
     <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/openstack storlet简单介绍.html</id>
-    <content type="html">&lt;p&gt;storlet的特点、是怎么被调用的、是怎么部署的&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/openstack storlet简单介绍.html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>SDS原型（二）</title>
-    <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/sds原型(二).html</id>
-    <content type="html">&lt;p&gt;sds目前的方案以及存在的问题&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/sds原型(二).html"></link>
+    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs源码阅读(二).html</id>
+    <content type="html">&lt;p&gt;seaweedfs早期版本分析&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs源码阅读(二).html"></link>
     <author>
       <name>钟俊</name>
     </author>

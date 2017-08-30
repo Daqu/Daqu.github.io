@@ -45,10 +45,10 @@
 </script>
 
 
-        <meta name="keywords" content="输出,openstack,storlet,">
-        <meta name="description" content="openstack storlet简单介绍">
+        <meta name="keywords" content="日报,研究生,">
+        <meta name="description" content="17-08-30 日报">
         <meta name="author" content="钟俊">
-        <title>openstack storlet简单介绍</title>
+        <title>17-08-30 日报</title>
     </head>
     <body>
         <article class="container">
@@ -65,42 +65,31 @@
 </header>
 
             <article class="main article">
-                <h1 class="title">openstack storlet简单介绍</h1>
+                <h1 class="title">17-08-30 日报</h1>
                 <section class="info">
                     <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
                     <a class="name" href="/about.me.html">钟俊</a>
                     
-                    <span class="date" data-time="1503756000"><span class="from"></span></span>
+                    <span class="date" data-time="1504081320"><span class="from"></span></span>
                     
-                    <span class="tags"><a class="tag" href="/tag/%e8%be%93%e5%87%ba/index.html">输出</a><a class="tag" href="/tag/openstack/index.html">openstack</a><a class="tag" href="/tag/storlet/index.html">storlet</a></span>
+                    <span class="tags"><a class="tag" href="/tag/%e6%97%a5%e6%8a%a5/index.html">日报</a><a class="tag" href="/tag/%e7%a0%94%e7%a9%b6%e7%94%9f/index.html">研究生</a></span>
                 </section>
-                <article class="content"><h2>openstack storlet简单介绍</h2>
+                <article class="content"><h1>完成的任务~</h1>
 
-<h4>storlet的特点</h4>
-
-<p>storlet无法操作硬盘，网络甚至是swift的请求环境(可以理解为不能修改请求么？)</p>
-
-<p>storlet在执行时不能被理解为一般意义上的工作进程，特别是那种需要大量临时内存的进程。因为它工作在一个沙盒环境中，不能使用太多内存。作者不建议用storlet创建临时文件。storlet的运行过程一般是从输入流读取数据，执行任务，然后将结果写入到输出流。</p>
-
-<p>值得注意的是，每一个storlet读取和存储的数据会根据调用方式的不同而发生改变：</p>
+<p>1.SDS原型（三)缓慢推进，今天的进展主要是:</p>
 
 <ul>
-<li><strong>下载</strong>&ndash;如果是在一个对象下载过程中调用storlet。那么用户接受到的输入流(inputstream)将是经过storlet转化(transform)过的。也就是说这时storlet接收到的数据不是存储在swift中的数据。</li>
-<li><strong>上传</strong> &ndash;如果是在一个对象上传过程中调用storlet。那么存储在swift中的数据将不会是它原来的数据，而是经过storlet转化的数据。</li>
-<li><strong>操作(object copy)</strong>&ndash;如果storlet要对一个对象进行持续操作，那么它的输出将会工作(keep in)在一个该对象的副本上。</li>
+<li>理清了管道化、分层、插件化三者的关系，它们其实是按照分层，插件，管道的顺序有循序渐进的关系。管道化是最终的形态</li>
+<li>在文章对上述作了解释</li>
+<li>思考如何将weedfs管道化，今天的收获是，每个模块都应该提供相似的调用api，这么做的目的是让它们在架构上有相似性。在调用的时候能比较方便。文章中只是记录这个想法，但还没有解释。</li>
 </ul>
 
-<h4>storlet是怎么被调用的</h4>
+<p>2.正在观察weedfs的老版本，希望找到一个不错的版本用于修改。目标是：</p>
 
-<p>storlet的本质是swift的一个对象，存储在名叫storlet的容器中。但是storlet实现了一种底层机制(engine)使得这些storlet对象能够被动态的调用，storlet的生命流程可以简单地概括为拦截io请求-&gt;将请求重定向到storlet-&gt;返回storlet定制过的输出流。storlet的这种机制(engine)本质是swift的中间件。</p>
-
-<h4>storlet是怎么部署的</h4>
-
-<p>storlet部署的过程可以分为三步，分别是编写storlet、编译打包storlet、将storlet作为一个对象上传到swift。再简单一点，可以说storlet的部署就是将打包好的storlet(包括依赖)上传到swift的特定的container中。</p>
-
-<h4>storlet engine的本质</h4>
-
-<p>前面提到，storlet engine其实是swift的中间件。每一个swift请求都会经过部署在swift上的中间件。那么一个请求在经过storlet engine时发生了什么事情呢？storlet engine在往下说，它其实是一个python WSGI，起到路由的作用。关于WSGI可以看这个<a href="http://www.nowamagic.net/academy/detail/1330310">这个</a></p>
+<ul>
+<li>基本功能完备，这里重点是bug少</li>
+<li>架构清晰</li>
+</ul>
 </article>
                 <section class="author">
                     <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
@@ -109,15 +98,10 @@
                 </section>
                 <section class="recommend">
                     
-                    <section class="nav prev more">
-                        <div class="head">上篇文章</div>
-                        <a class="link" href="/misc/2017/08/26/sds%e5%8e%9f%e5%9e%8b%28%e4%b8%80%29.html">SDS原型（一）</a>
-                    </section>
                     
-                    
-                    <section class="nav next more">
+                    <section class="nav next">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/misc/2017/08/26/sds%e5%8e%9f%e5%9e%8b%28%e4%ba%8c%29.html">SDS原型（二）</a>
+                        <a class="link" href="/misc/2017/08/29/daqu-8-29.html">17-08-29 日报</a>
                     </section>
                     
                 </section>
