@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-09-05T18:59:20+08:00</updated>
+  <updated>2017-09-06T19:24:42+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
+  <entry>
+    <title>openstack swift middleware简单介绍</title>
+    <updated>2017-09-06T19:22:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-09-06:/misc/2017/09/06/swift_middleware.html</id>
+    <content type="html">&lt;p&gt;openstack swift middleware介绍&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/09/06/swift_middleware.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
+  <entry>
+    <title>17-09-06 日报</title>
+    <updated>2017-09-06T18:58:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-09-06:/misc/2017/09/06/daqu-9-6.html</id>
+    <content type="html">&lt;p&gt;研究了middleware的技术背景python wsgi&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/09/06/daqu-9-6.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
   <entry>
     <title>17-09-05 日报</title>
     <updated>2017-09-05T18:58:00+08:00</updated>
@@ -83,26 +103,6 @@
     <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/daqu-8-26.html</id>
     <content type="html">&lt;p&gt;搭了一个静态博客，学习OTP中的知识&amp;hellip;&lt;/p&gt;&#xA;</content>
     <link href="http://www.daqu.github.io/misc/2017/08/26/daqu-8-26.html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>SDS原型（一）</title>
-    <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/sds原型(一).html</id>
-    <content type="html">&lt;p&gt;sds目前的情况&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/sds原型(一).html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>seaweedfs简单介绍</title>
-    <updated>2017-08-26T22:00:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-26:/misc/2017/08/26/seaweedfs简单介绍.html</id>
-    <content type="html">&lt;p&gt;seaweedfs简单介绍&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/26/seaweedfs简单介绍.html"></link>
     <author>
       <name>钟俊</name>
     </author>
