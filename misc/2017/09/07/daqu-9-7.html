@@ -46,9 +46,9 @@
 
 
         <meta name="keywords" content="日报,研究生,">
-        <meta name="description" content="17-08-26 日报">
+        <meta name="description" content="17-09-07 日报">
         <meta name="author" content="钟俊">
-        <title>17-08-26 日报</title>
+        <title>17-09-07 日报</title>
     </head>
     <body>
         <article class="container">
@@ -65,20 +65,40 @@
 </header>
 
             <article class="main article">
-                <h1 class="title">17-08-26 日报</h1>
+                <h1 class="title">17-09-07 日报</h1>
                 <section class="info">
                     <span class="avatar" style="background-image: url(/images/avatar.jpg);"></span>
                     <a class="name" href="/about.me.html">钟俊</a>
                     
-                    <span class="date" data-time="1503760380"><span class="from"></span></span>
+                    <span class="date" data-time="1504783500"><span class="from"></span></span>
                     
                     <span class="tags"><a class="tag" href="/tag/%e6%97%a5%e6%8a%a5/index.html">日报</a><a class="tag" href="/tag/%e7%a0%94%e7%a9%b6%e7%94%9f/index.html">研究生</a></span>
                 </section>
-                <article class="content"><h1>完成的工作~</h1>
+                <article class="content"><h2>过程</h2>
 
-<p>1.构建一个静态博客用来存储日报和输出</p>
+<p>1.Swift Architectural Overview （一天一文档）</p>
 
-<p>2.完成mix和otp分布式存储第三到第五部分。对OTP中的agent，genserver，supervisor以及ETS有了初步的了解</p>
+<ul>
+<li><p>Ring-&gt;mapping、name-&gt;physical store</p></li>
+
+<li><p>storage policy-&gt;分层。不仅可以分三层</p></li>
+
+<li><p>{Object server -&gt;simple blob storage server</p></li>
+</ul>
+
+<p>存储的是二进制文件（内容+元数据，但是元数据存储形式不一样，是以xattr的形式存储）</p>
+
+<p>}</p>
+
+<ul>
+<li><p>Container server <strong>listing 存储在数据库里</strong></p></li>
+
+<li><p>Account server <strong>存储在数据库里</strong></p></li>
+</ul>
+
+<p>2.测试xattr（环境manjaro 17.03）</p>
+
+<p>使用attr命令往一个空文件附加一个键值对 key：name、value：daqu</p>
 </article>
                 <section class="author">
                     <div class="avatar" style="background-image: url(/images/avatar.jpg);"></div>
@@ -87,15 +107,10 @@
                 </section>
                 <section class="recommend">
                     
-                    <section class="nav prev more">
-                        <div class="head">上篇文章</div>
-                        <a class="link" href="/misc/2017/08/28/daqu-8-27.html">17-08-27 日报</a>
-                    </section>
                     
-                    
-                    <section class="nav next more">
+                    <section class="nav next">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/misc/2017/08/26/seaweedfs%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d.html">seaweedfs简单介绍</a>
+                        <a class="link" href="/misc/2017/09/06/swift_middleware.html">openstack swift middleware简单介绍</a>
                     </section>
                     
                 </section>
