@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-09-13T18:36:24+08:00</updated>
+  <updated>2017-09-14T21:53:13+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
+  <entry>
+    <title>17-09-14 日报</title>
+    <updated>2017-09-14T21:25:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-09-14:/misc/2017/09/14/daqu-9-14.html</id>
+    <content type="html">&lt;p&gt;openstack swift middleware缓慢推进中&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/09/14/daqu-9-14.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
   <entry>
     <title>17-09-13 日报</title>
     <updated>2017-09-13T18:25:00+08:00</updated>
@@ -93,16 +103,6 @@
     <id>tag:www.daqu.github.io,2017-08-30:/misc/2017/08/30/daqu-8-30.html</id>
     <content type="html">&lt;p&gt;将SDS原型(三)推进了一部分&amp;hellip;&lt;/p&gt;&#xA;</content>
     <link href="http://www.daqu.github.io/misc/2017/08/30/daqu-8-30.html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>17-08-29 日报</title>
-    <updated>2017-08-29T16:22:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-08-29:/misc/2017/08/29/daqu-8-29.html</id>
-    <content type="html">&lt;p&gt;效率不高&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/08/29/daqu-8-29.html"></link>
     <author>
       <name>钟俊</name>
     </author>
