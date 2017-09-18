@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-09-15T17:53:51+08:00</updated>
+  <updated>2017-09-18T18:55:05+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
+  <entry>
+    <title>17-09-18 日报</title>
+    <updated>2017-09-18T18:53:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-09-18:/misc/2017/09/18/daqu-9-18.html</id>
+    <content type="html">&lt;p&gt;标记中间件推进中&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/09/18/daqu-9-18.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
   <entry>
     <title>17-09-15 日报</title>
     <updated>2017-09-15T17:53:00+08:00</updated>
@@ -93,16 +103,6 @@
     <id>tag:www.daqu.github.io,2017-09-06:/misc/2017/09/06/daqu-9-6.html</id>
     <content type="html">&lt;p&gt;研究了middleware的技术背景python wsgi&amp;hellip;&lt;/p&gt;&#xA;</content>
     <link href="http://www.daqu.github.io/misc/2017/09/06/daqu-9-6.html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>17-09-05 日报</title>
-    <updated>2017-09-05T18:58:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-09-05:/misc/2017/09/05/daqu-9-5.html</id>
-    <content type="html">&lt;p&gt;只是看了下接下来要研究的swift middleware&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/09/05/daqu-9-5.html"></link>
     <author>
       <name>钟俊</name>
     </author>
