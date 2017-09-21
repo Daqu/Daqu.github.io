@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>钟俊的博客</title>
   <id>http://www.daqu.github.io</id>
-  <updated>2017-09-20T16:33:44+08:00</updated>
+  <updated>2017-09-21T21:52:32+08:00</updated>
   <subtitle>记录</subtitle>
   <link href="http://www.daqu.github.io"></link>
   <author>
     <name>钟俊的博客</name>
   </author>
+  <entry>
+    <title>17-09-21 日报</title>
+    <updated>2017-09-21T21:51:00+08:00</updated>
+    <id>tag:www.daqu.github.io,2017-09-21:/misc/2017/09/21/daqu-9-21.html</id>
+    <content type="html">&lt;p&gt;部署python pastedeploy成功&amp;hellip;&lt;/p&gt;&#xA;</content>
+    <link href="http://www.daqu.github.io/misc/2017/09/21/daqu-9-21.html"></link>
+    <author>
+      <name>钟俊</name>
+    </author>
+  </entry>
   <entry>
     <title>17-09-20 日报</title>
     <updated>2017-09-20T16:33:00+08:00</updated>
@@ -93,16 +103,6 @@
     <id>tag:www.daqu.github.io,2017-09-12:/misc/2017/09/10/daqu-9-10.html</id>
     <content type="html">&lt;p&gt;了解了链接的知识与linux ssh&amp;hellip;&lt;/p&gt;&#xA;</content>
     <link href="http://www.daqu.github.io/misc/2017/09/10/daqu-9-10.html"></link>
-    <author>
-      <name>钟俊</name>
-    </author>
-  </entry>
-  <entry>
-    <title>17-09-07 日报</title>
-    <updated>2017-09-07T19:25:00+08:00</updated>
-    <id>tag:www.daqu.github.io,2017-09-07:/misc/2017/09/07/daqu-9-7.html</id>
-    <content type="html">&lt;p&gt;看了swift部分文档，测试attr&amp;hellip;&lt;/p&gt;&#xA;</content>
-    <link href="http://www.daqu.github.io/misc/2017/09/07/daqu-9-7.html"></link>
     <author>
       <name>钟俊</name>
     </author>
