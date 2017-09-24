@@ -1,0 +1,144 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>daqu-8-7 日报 &#8212; Starry 0.0.1 文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="daqu-8-8 日报" href="daqu-8-8.html" />
+    <link rel="prev" title="daqu-8-30 日报" href="daqu-8-30.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="daqu-8-7">
+<h1>daqu-8-7 日报<a class="headerlink" href="#daqu-8-7" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>完成的工作~<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li>简单复习了haystack的论文</li>
+<li><ul class="first">
+<li>haystack的特点是足够简单（相比与其它方案）</li>
+</ul>
+</li>
+</ol>
+<ul class="simple">
+<li>合并是基于物理卷(逻辑概念是volume，是的物理概念和逻辑概念都是volume)合并，volume维护当前卷下的元数据</li>
+<li>needle可以被理解为精简过的inode?</li>
+<li>haystack是对象存储，不是文件系统。这点跟swift很像。文中似乎提到在不同场景下可以切换底层文件系统</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li>阅读了seaweedfs的代码导读，理解了seaweedfs的代码结构</li>
+<li><ul class="first">
+<li>seaweedfs是haystack的开源实现</li>
+</ul>
+</li>
+</ol>
+<ul class="simple">
+<li>seaweedfs可以简单分为集群模块和文件模块，集群模块的目的是为了维护分布式系统，文件模块的目的则是实现haystack。</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>下一步工作~<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li>深入阅读seaweedfs文件模块的代码</li>
+<li>思考如何将haystack中的小文件优化封装成一个模块</li>
+<li>思考如何在haystack中实现存储控制和数据的分离</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Starry</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">日报</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">日报</a><ul>
+  <li><a href="index.html">2017年8月</a><ul>
+      <li>Previous: <a href="daqu-8-30.html" title="上一章">daqu-8-30 日报</a></li>
+      <li>Next: <a href="daqu-8-8.html" title="下一章">daqu-8-8 日报</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, daqu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/days/17-08/daqu-8-7.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

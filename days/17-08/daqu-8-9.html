@@ -1,0 +1,167 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>daqu-8-9 日报 &#8212; Starry 0.0.1 文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="daqu-9-10 日报" href="../daqu-9-10.html" />
+    <link rel="prev" title="daqu-8-8 日报" href="daqu-8-8.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="daqu-8-9">
+<h1>daqu-8-9 日报<a class="headerlink" href="#daqu-8-9" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>完成的工作~<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li>阅读seaweedfs的storage部分代码，但是只完成了两个文件的阅读。进度缓慢</li>
+<li>复习了<a class="reference external" href="http://blog.csdn.net/endlu/article/details/51720299">btree</a>，因为seaweedfs用这个作为文件的数据结构。具体可见<code class="docutils literal"><span class="pre">storage/needle/btree_map.go</span></code></li>
+</ul>
+<p>谷歌就btree写了一个golang
+包，能够基于内存实现btree。然后seaweedfs用btree作为数据结构来维护文件。</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>func NewBtreeMap() *BtreeMap {
+    return &amp;BtreeMap{
+        tree: btree.New(32),
+    }
+}
+
+func (cm *BtreeMap) Set(key Key, offset, size uint32) (oldOffset, oldSize uint32) {
+    found := cm.tree.ReplaceOrInsert(NeedleValue{key, offset, size})
+    if found != nil {
+        old := found.(NeedleValue)
+        return old.Offset, old.Size
+    }
+    return
+}
+
+··· ···
+</pre></div>
+</div>
+<p>上面是weed中关于btree的部分，可以看到这部分负责创建btree的实例。然后weedfs将它与文件对应起来。在<code class="docutils literal"><span class="pre">needle_map.go</span></code>中</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">NeedleMapper</span> <span class="n">interface</span> <span class="p">{</span>
+    <span class="n">Put</span><span class="p">(</span><span class="n">key</span> <span class="n">uint64</span><span class="p">,</span> <span class="n">offset</span> <span class="n">uint32</span><span class="p">,</span> <span class="n">size</span> <span class="n">uint32</span><span class="p">)</span> <span class="n">error</span>
+    <span class="n">Get</span><span class="p">(</span><span class="n">key</span> <span class="n">uint64</span><span class="p">)</span> <span class="p">(</span><span class="n">element</span> <span class="o">*</span><span class="n">needle</span><span class="o">.</span><span class="n">NeedleValue</span><span class="p">,</span> <span class="n">ok</span> <span class="nb">bool</span><span class="p">)</span>
+    <span class="n">Delete</span><span class="p">(</span><span class="n">key</span> <span class="n">uint64</span><span class="p">,</span> <span class="n">offset</span> <span class="n">uint32</span><span class="p">)</span> <span class="n">error</span>
+    <span class="n">Close</span><span class="p">()</span>
+    <span class="n">Destroy</span><span class="p">()</span> <span class="n">error</span>
+    <span class="n">ContentSize</span><span class="p">()</span> <span class="n">uint64</span>
+    <span class="n">DeletedSize</span><span class="p">()</span> <span class="n">uint64</span>
+    <span class="n">FileCount</span><span class="p">()</span> <span class="nb">int</span>
+    <span class="n">DeletedCount</span><span class="p">()</span> <span class="nb">int</span>
+    <span class="n">MaxFileKey</span><span class="p">()</span> <span class="n">uint64</span>
+    <span class="n">IndexFileSize</span><span class="p">()</span> <span class="n">uint64</span>
+    <span class="n">IndexFileContent</span><span class="p">()</span> <span class="p">([]</span><span class="n">byte</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+    <span class="n">IndexFileName</span><span class="p">()</span> <span class="n">string</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>作者设置了NeedleMapper接口。因为前面btree模块中实现了这个接口中的Put、Get方法。这样Btree实例就可以通过这个接口和文件关联起来。</p>
+<ul class="simple">
+<li>复习了golang的一些语法，在阅读过程中复习的</li>
+<li>将weedfs在windows下的环境搭建作了总结</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>待完成的工作~<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li>继续阅读seaweedfs</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Starry</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">日报</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">日报</a><ul>
+  <li><a href="index.html">2017年8月</a><ul>
+      <li>Previous: <a href="daqu-8-8.html" title="上一章">daqu-8-8 日报</a></li>
+      <li>Next: <a href="../daqu-9-10.html" title="下一章">daqu-9-10 日报</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, daqu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/days/17-08/daqu-8-9.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

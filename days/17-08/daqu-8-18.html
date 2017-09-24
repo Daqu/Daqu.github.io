@@ -1,0 +1,123 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>daqu-8-18 日报 &#8212; Starry 0.0.1 文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="daqu-8-2 日报" href="daqu-8-2.html" />
+    <link rel="prev" title="daqu-8-17 日报" href="daqu-8-17.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="daqu-8-18">
+<h1>daqu-8-18 日报<a class="headerlink" href="#daqu-8-18" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>完成的工作~<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>1.研究了weedfs的源码结构，目的是思考如何将其变为sds结构。</p>
+<p>2.考虑如果要在weedfs上实现SDS的话，它的结构可以是</p>
+<p>File-controller-data的形式？其中File代表元数据，用户在除文件下载的操作外都是和元数据打交道，controller负责转发文件请求，data代表实际的文件。</p>
+<p>3.简单实现了一个文件服务器</p>
+</div>
+<div class="section" id="id2">
+<h2>下一步工作~<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>1.继续思考</p>
+<p>2.找点时间研究一下如何实现一个SDS原型</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Starry</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">日报</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">日报</a><ul>
+  <li><a href="index.html">2017年8月</a><ul>
+      <li>Previous: <a href="daqu-8-17.html" title="上一章">daqu-8-17 日报</a></li>
+      <li>Next: <a href="daqu-8-2.html" title="下一章">daqu-8-2 日报</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, daqu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/days/17-08/daqu-8-18.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
