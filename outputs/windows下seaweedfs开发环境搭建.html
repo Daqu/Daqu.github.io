@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>daqu-9-5 日报 &#8212; Starry 0.0.1 文档</title>
+    <title>windows下seaweedfs开发环境搭建 &#8212; Starry 0.0.1 文档</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="daqu-9-6 日报" href="daqu-9-6.html" />
-    <link rel="prev" title="daqu-9-23 日报" href="daqu-9-23.html" />
+    <link rel="next" title="从测试看storlet的部署过程" href="从测试看storlet的部署过程.html" />
+    <link rel="prev" title="weedfs生命流程" href="weedfs生命流程.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -41,14 +41,25 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="daqu-9-5">
-<h1>daqu-9-5 日报<a class="headerlink" href="#daqu-9-5" title="永久链接至标题">¶</a></h1>
+  <div class="section" id="windowsseaweedfs">
+<h1>windows下seaweedfs开发环境搭建<a class="headerlink" href="#windowsseaweedfs" title="永久链接至标题">¶</a></h1>
 <div class="section" id="id1">
-<h2>完成的工作~<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
-<p>1.简单的了解一下swift middleware机制</p>
-<p>看了这篇文章<a class="reference external" href="http://www.sohu.com/a/163874929_314773">《对象存储：OpenStack Swift应用、管理与开发》 第八章
-部署Swift中间件</a></p>
-<p>2.尝试写了一个wsgi的hello world应用。因为middleware的本质是wsgi</p>
+<h2>1.必备条件<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://curl.haxx.se/download.html">curl</a> Win64 -
+Generic或者Win32 - Generic的7zip
+<a class="reference external" href="http://www.cnblogs.com/xing901022/p/4652624.html">安装过程</a></li>
+<li><a class="reference external" href="https://github.com/chrislusf/seaweedfs/releases">weedfs编译版本</a>
+weedfs的安装非常简单，windows下只有一个执行文件<code class="docutils literal"><span class="pre">weed.exe</span></code>。因此只需将它放进环境变量路径就可以了，为了方便可以将weed.exe放入curl解压目录的bin文件夹下。</li>
+</ol>
+</div>
+<div class="section" id="id2">
+<h2>2.阅读源码配置<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://www.golangtc.com/download">go语言安装</a>
+值得注意的是在安装后需要新建GOPATH目录并将其加入环境变量</li>
+<li><a class="reference external" href="https://www.jetbrains.com/go/">gogland</a></li>
+</ol>
 </div>
 </div>
 
@@ -69,16 +80,17 @@
 
 <h3>导航</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">日报</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../days/index.html">日报</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">输出</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">日报</a><ul>
-      <li>Previous: <a href="daqu-9-23.html" title="上一章">daqu-9-23 日报</a></li>
-      <li>Next: <a href="daqu-9-6.html" title="下一章">daqu-9-6 日报</a></li>
+  <li><a href="index.html">输出</a><ul>
+      <li>Previous: <a href="weedfs生命流程.html" title="上一章">weedfs生命流程</a></li>
+      <li>Next: <a href="从测试看storlet的部署过程.html" title="下一章">从测试看storlet的部署过程</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -105,7 +117,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/days/daqu-9-5.rst.txt"
+      <a href="../_sources/outputs/windows下seaweedfs开发环境搭建.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

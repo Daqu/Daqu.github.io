@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>daqu-9-5 日报 &#8212; Starry 0.0.1 文档</title>
+    <title>erlang进程模型 &#8212; Starry 0.0.1 文档</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="daqu-9-6 日报" href="daqu-9-6.html" />
-    <link rel="prev" title="daqu-9-23 日报" href="daqu-9-23.html" />
+    <link rel="next" title="openstack storlet简单介绍" href="openstack storlet简单介绍.html" />
+    <link rel="prev" title="curl操作storlet" href="curl操作storlet.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -41,14 +41,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="daqu-9-5">
-<h1>daqu-9-5 日报<a class="headerlink" href="#daqu-9-5" title="永久链接至标题">¶</a></h1>
+  <div class="section" id="erlang">
+<h1>erlang进程模型<a class="headerlink" href="#erlang" title="永久链接至标题">¶</a></h1>
 <div class="section" id="id1">
-<h2>完成的工作~<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
-<p>1.简单的了解一下swift middleware机制</p>
-<p>看了这篇文章<a class="reference external" href="http://www.sohu.com/a/163874929_314773">《对象存储：OpenStack Swift应用、管理与开发》 第八章
-部署Swift中间件</a></p>
-<p>2.尝试写了一个wsgi的hello world应用。因为middleware的本质是wsgi</p>
+<h2>erlang进程<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>erlang进程(erlang
+process)不是操作系统中的进程或者线程，它是erlang中一种重要的抽象。它的本质是erlang虚拟机中的<strong>虚拟进程</strong>。它的特点是很轻量，因此可以同时创建成千上万的erlang
+process。但更有意思的是它的运行机制，erlang进程就像是一个邮递员，每一个邮递员都携带一个邮箱。一个erlang程序就是一群邮递员在互相传递信件的过程。</p>
+<p>举个例子，erlang因为是函数式编程语言，因此没有副作用。也就是说，erlang的中变量一旦被初始化后就是不变的。那就有一个问题，假如有的结果依赖于别的结果怎么办啊。不可能每次都要新建一个结果吧。</p>
 </div>
 </div>
 
@@ -69,16 +69,17 @@
 
 <h3>导航</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">日报</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../days/index.html">日报</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">输出</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">日报</a><ul>
-      <li>Previous: <a href="daqu-9-23.html" title="上一章">daqu-9-23 日报</a></li>
-      <li>Next: <a href="daqu-9-6.html" title="下一章">daqu-9-6 日报</a></li>
+  <li><a href="index.html">输出</a><ul>
+      <li>Previous: <a href="curl操作storlet.html" title="上一章">curl操作storlet</a></li>
+      <li>Next: <a href="openstack storlet简单介绍.html" title="下一章">openstack storlet简单介绍</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -105,7 +106,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/days/daqu-9-5.rst.txt"
+      <a href="../_sources/outputs/erlang进程模型.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

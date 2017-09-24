@@ -1,0 +1,143 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SDS原型(三) 日报 &#8212; Starry 0.0.1 文档</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="SDS原型(二) 日报" href="SDS原型(二).html" />
+    <link rel="prev" title="SDS原型(一)" href="SDS原型(一).html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sds">
+<h1>SDS原型(三) 日报<a class="headerlink" href="#sds" title="永久链接至标题">¶</a></h1>
+</div>
+<div class="section" id="id1">
+<h1>SDS原型(三)<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<p>因为seaweedfs已经是一套完整的解决方案，那么只需要调整它的架构即可让其变成SDS的项目。调整架构以及模块，但不是重构。</p>
+<div class="section" id="id2">
+<h2>管道化、插件化、模块化<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>管道化</p>
+<p>将seaweedfs的一次请求-响应的过程看成是请求流入管道，并最终流出管道成为响应的过程。SDS的控制体现在数据在经过管道时会发生变化，管子组合在一起形成管道，也就是控制层。</p>
+<p><strong>问题</strong>：管道是个很抽象的概念，如何将seaweedfs中一次请求-响应的过程抽象为一个操作序列是个问题。举个例子，比如seaweedfs的网络部分已经被看成是一个管子，这根管子负责网络请求的收发和转化。为了更细腻的控制，可以将这根管子拆成更多的管子。为了更清晰的架构，可以将这根管子和其它管子组合成更大的管子。问题就是，如何描述这种机制，用管子组成管道的机制。</p>
+<p>mvc分层</p>
+<p>将各功能模块按照<a class="reference external" href="https://baike.baidu.com/item/MVC%E6%A1%86%E6%9E%B6/9241230?fr=aladdin&amp;fromid=85990&amp;fromtitle=MVC">MVC</a>的设计理念分为控制、数据层</p>
+<p><strong>问题</strong>：seaweedfs中的网络部分倾向于控制，文件部分倾向于数据。但是按照这种思路处理无法解决在SDS原型(二)中提到的问题，就是网络请求转为文件请求后，从文件请求开始到文件响应发出这部分无法做控制。原因是按照MVC的思想，文件部分已经是数据层了，从网络应用的角度来说这是对的，但是从存储系统来说这是不对的，因为在底层的文件读取函数被调用前发生的过程都可以算入控制。</p>
+<p>插件化</p>
+<p>将seaweedfs看成是一块插满插头的插座。将各功能模块看成是插头，将要实现的控制层看成是插座。插座加插头形成seaweedfs。他的特点在于各功能模块之间的耦合度很低。</p>
+<p><strong>问题</strong>：根据插件化的介绍，数据层变得模糊，或者是数据层重要性不如控制层重要，因为它只是个插头，虽然没了这个插头不行。但从架构上说好像不大好。</p>
+<div class="section" id="id3">
+<h3>三者的联系<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>仔细想了下，其实分层、插件、管道三者有个循序渐进的关系。分层在这里其实只有一个朴素的目的，那就是控制与数据分离。虽然借用了MVC的思想，但其实不适用。也就是说，分层只是通过MVC找到了将存储系统进行控制和数据分离的方向。插件化是对分层的进一步细化，分层给出了控制和数据的区分，也就是哪些功能可以归类到控制，哪些功能可以归类到数据，但控制层的形态应该是什么样的并没有说。插件化其实解决了这个问题，因为它告诉我们各个功能模块应该是能够独立出来的，weeedfs本身是一个框架，各个功能模块作为插件整合在一起工作。但是插件化还不够完整，因为它只是描述了各个模块应该是一种怎样的姿态，但是各个模块应该是怎样工作的还没有描述清楚。然后管道化就解决了这个问题，管道化在插件化的基础上增加了模块之间协作的描述，管道化把整个请求-响应的过程看成是管道，也就是说请求会顺序地通过管道中的管子（各个模块）最后产生响应。</p>
+<p><strong>需求</strong>：</p>
+<p>1.一个管道机制</p>
+<p>2.让各功能模块支持管道</p>
+<p><strong>如何与原来的seaweed fs区别开来</strong></p>
+<p>修改后的weedfs相比于原来最大的特点就是有清晰的控制层，也就是管道机制。</p>
+</div>
+<div class="section" id="id4">
+<h3>管道机制<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<p>管道机制可以是不断执行任务序列的循环</p>
+</div>
+<div class="section" id="id5">
+<h3>管子<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p>管子是各模块修改后要表现出的形态，每一根管子应该有相似之处。比如被调用的api的签名应该类似。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Starry</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../days/index.html">日报</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">输出</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">输出</a><ul>
+      <li>Previous: <a href="SDS原型(一).html" title="上一章">SDS原型(一)</a></li>
+      <li>Next: <a href="SDS原型(二).html" title="下一章">SDS原型(二) 日报</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, daqu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/outputs/SDS原型(三).rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

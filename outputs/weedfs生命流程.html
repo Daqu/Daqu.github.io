@@ -1,0 +1,248 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>weedfs生命流程 &#8212; Starry 0.0.1 文档</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="windows下seaweedfs开发环境搭建" href="windows下seaweedfs开发环境搭建.html" />
+    <link rel="prev" title="openstack swift middleware" href="swift_middleware.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="weedfs">
+<h1>weedfs生命流程<a class="headerlink" href="#weedfs" title="永久链接至标题">¶</a></h1>
+<div class="section" id="weed-go">
+<h2>(入口)./weed.go<a class="headerlink" href="#weed-go" title="永久链接至标题">¶</a></h2>
+<p>总入口，执行过程如下</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>func main() {
+    glog.MaxSize = 1024 * 1024 * 32
+    rand.Seed(time.Now().UnixNano())
+    flag.Usage = usage
+    flag.Parse()    //设置一下背景
+
+    args := flag.Args()
+    if len(args) &lt; 1 {
+        usage()
+    }
+//如果第一个参数是help，则跳转到help
+    if args[0] == &quot;help&quot; {
+        help(args[1:])
+        for _, cmd := range commands {
+            if len(args) &gt;= 2 &amp;&amp; cmd.Name() == args[1] &amp;&amp; cmd.Run != nil {
+                fmt.Fprintf(os.Stderr, &quot;Default Parameters:\n&quot;)
+                cmd.Flag.PrintDefaults()
+            }
+        }
+        return
+    }
+//主入口，根据commands构造参数，并执行run方法
+    for _, cmd := range commands {
+        if cmd.Name() == args[0] &amp;&amp; cmd.Run != nil {
+            cmd.Flag.Usage = func() { cmd.Usage() }
+            cmd.Flag.Parse(args[1:])
+            args = cmd.Flag.Args()
+            IsDebug = cmd.IsDebug
+            if !cmd.Run(cmd, args) {
+                fmt.Fprintf(os.Stderr, &quot;\n&quot;)
+                cmd.Flag.Usage()
+                fmt.Fprintf(os.Stderr, &quot;Default Parameters:\n&quot;)
+                cmd.Flag.PrintDefaults()
+            }
+            exit()
+            return
+        }
+    }
+//有错误就输出
+    fmt.Fprintf(os.Stderr, &quot;weed: unknown subcommand %q\nRun &#39;weed help&#39; for usage.\n&quot;, args[0])
+    setExitStatus(2)
+    exit()
+}
+</pre></div>
+</div>
+<p>其中cmd.run函数的签名如下，接受一个命令和参数</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="n">Run</span> <span class="n">func</span><span class="p">(</span><span class="n">cmd</span> <span class="o">*</span><span class="n">Command</span><span class="p">,</span> <span class="n">args</span> <span class="p">[]</span><span class="n">string</span><span class="p">)</span> <span class="nb">bool</span>
+</pre></div>
+</div>
+<p>Command的结构如下</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>var Commands = []*Command{
+    cmdBenchmark,   //测试
+    cmdBackup,      //备份
+    cmdCompact,     //合并？备份
+    cmdCopy,        //文件复制
+    cmdFix,         //重建索引
+    cmdServer,      //同时启动Master服务和Volume服务
+    cmdMaster,      //Master服务
+    cmdFiler,       //启动文件服务器，处理rest请求
+    cmdUpload,      //上传文件
+    cmdDownload,    //下载文件
+    cmdShell,       //开启交互命令行
+    cmdVersion,     //打印weedfs版本
+    cmdVolume,      //Volume服务
+    cmdExport,      //列出所有文件或者将数据导出
+    cmdMount,       //挂载filer到usespace，FUSE
+}
+</pre></div>
+</div>
+<p>入口函数会使用range语法遍历Command里面的成员，不空则执行对应的命令</p>
+</div>
+<div class="section" id="weed-command-master-go">
+<h2>(请求)./weed/command/master.go<a class="headerlink" href="#weed-command-master-go" title="永久链接至标题">¶</a></h2>
+<p>如果执行的是master命令，那么这次命令将启动master服务。当执行master命令时，程序将从入口函数切换到master模块，执行该模块下的runMaster函数。这个函数最主要的功能是新建了一个mux实例。</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>// 节选func run   r := mux.NewRouter()
+    ms := weed_server.NewMasterServer(r,
+                                      *mport,
+                                      *metaFolder,
+                                      *volumeSizeLimitMB,
+                                      *volumePreallocate,
+                                      *mpulse,
+                                   *defaultReplicaPlacement,
+                                      *garbageThreshold,
+                                      masterWhiteList,
+                                      *masterSecureKey,
+    )Master(cmd *Command, args []string) bool
+    r := mux.NewRouter()
+    ms := weed_server.NewMasterServer(r, *mport,
+                                      *metaFolder,
+                                      *volumeSizeLimitMB,
+                                      *volumePreallocate,
+                                      *mpulse,
+                                   *defaultReplicaPlacement,
+                                      *garbageThreshold,
+                                      masterWhiteList,
+                                      *masterSecureKey,
+    )
+
+golang自带的\ `http.SeverMux路由实现 &lt;http://studygolang.com/articles/4890&gt;`__\ 简单,本质是一个map[string]Handler,是请求路径与该路径对应的处理函数的映射关系。实现简单功能也比较单一
+1. 不支持正则路由， 这个是比较致命的 2.
+只支持路径匹配，不支持按照Method，header，host等信息匹配，所以也就没法实现RESTful架构
+
+而gorilla/mux是一个强大的路由，小巧但是稳定高效，不仅可以支持正则路由还可以按照Method，header，host等信息匹配，可以从我们设定的路由表达式中提取出参数方便上层应用，而且完全兼容http.ServerMux
+</pre></div>
+</div>
+<p>具体的路由处理函数被放到了weed/server/master_server.go里面</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">uiStatusHandler</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/ui/index.html&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">uiStatusHandler</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/dir/assign&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">dirAssignHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/dir/lookup&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">dirLookupHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/dir/status&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">dirStatusHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/col/delete&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">collectionDeleteHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/vol/lookup&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">volumeLookupHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/vol/grow&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">volumeGrowHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/vol/status&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">volumeStatusHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/vol/vacuum&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">volumeVacuumHandler</span><span class="p">)))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/submit&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">submitFromMasterServerHandler</span><span class="p">))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/delete&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">deleteFromMasterServerHandler</span><span class="p">))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{fileId}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">proxyToLeader</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">redirectHandler</span><span class="p">))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/stats/counter&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">statsCounterHandler</span><span class="p">))</span>
+<span class="n">r</span><span class="o">.</span><span class="n">HandleFunc</span><span class="p">(</span><span class="s2">&quot;/stats/memory&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">guard</span><span class="o">.</span><span class="n">WhiteList</span><span class="p">(</span><span class="n">statsMemoryHandler</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>可以看到master部分负责的路由，对应的方法也是被二次封装了。被封装成</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">ms</span> <span class="o">*</span><span class="n">MasterServer</span><span class="p">)</span> <span class="n">proxyToLeader</span><span class="p">(</span><span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">w</span> <span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">))</span> <span class="n">func</span><span class="p">(</span><span class="n">w</span> <span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>不但如此，请求和响应也被封装到了一个函数里面。它的签名是</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">g</span> <span class="o">*</span><span class="n">Guard</span><span class="p">)</span> <span class="n">WhiteList</span><span class="p">(</span><span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">w</span> <span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">))</span> <span class="n">func</span><span class="p">(</span><span class="n">w</span> <span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>在这里weeedfs通过封装的方式将请求交给了安全模块/weed/guard。但目前这里似乎是一片空白。。。因为guard也是继续转发请求，但是这次是直接交到后台程序。</p>
+<p>至此，整个请求部分就完成了。</p>
+<p>(响应)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Starry</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../days/index.html">日报</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">输出</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">输出</a><ul>
+      <li>Previous: <a href="swift_middleware.html" title="上一章">openstack swift middleware</a></li>
+      <li>Next: <a href="windows下seaweedfs开发环境搭建.html" title="下一章">windows下seaweedfs开发环境搭建</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, daqu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/outputs/weedfs生命流程.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

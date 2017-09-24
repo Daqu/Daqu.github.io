@@ -10,6 +10,7 @@
     :maxdepth: 1      
 
     days/index
+    outputs/index
 
 
 

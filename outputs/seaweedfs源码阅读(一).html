@@ -1,0 +1,303 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>seaweedfs源码阅读(一) &#8212; Starry 0.0.1 文档</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="seaweedfs源码阅读(二)" href="seaweedfs源码阅读(二).html" />
+    <link rel="prev" title="openstack storlet简单介绍" href="openstack storlet简单介绍.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="seaweedfs">
+<h1>seaweedfs源码阅读(一)<a class="headerlink" href="#seaweedfs" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.随便看看<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>作为一个新读者，一开始是很难把握项目的整个架构的。因此我先凭着感觉去看一下，然后便找到了<code class="docutils literal"><span class="pre">storage</span></code>目录。这个目录应该是讲怎么存储文件的，论文里面讲到needle代表着一个文件。那么先从<code class="docutils literal"><span class="pre">storage/needle.go</span></code>看起吧。</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="n">const</span> <span class="p">(</span>
+    <span class="n">NeedleHeaderSize</span>      <span class="o">=</span> <span class="mi">16</span> <span class="o">//</span><span class="n">should</span> <span class="n">never</span> <span class="n">change</span> <span class="n">this</span>
+    <span class="n">NeedlePaddingSize</span>     <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">NeedleChecksumSize</span>    <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">MaxPossibleVolumeSize</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">8</span>
+    <span class="n">TombstoneFileSize</span>     <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">MaxUint32</span>
+    <span class="n">PairNamePrefix</span>        <span class="o">=</span> <span class="s2">&quot;Seaweed-&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>一开始就定义了一堆常量，不过从名字上比较好判断它们是干嘛的。但是目前只知道<code class="docutils literal"><span class="pre">MaxPossibleVolumeSize</span></code>应该意味着一个Volume最大是4G。然后接下来便是needle的定义。</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>type Needle struct {
+    Cookie uint32 `comment:&quot;random number to mitigate brute force lookups&quot;`
+    Id     uint64 `comment:&quot;needle id&quot;`
+    Size   uint32 `comment:&quot;sum of DataSize,Data,NameSize,Name,MimeSize,Mime&quot;`
+
+    DataSize     uint32 `comment:&quot;Data size&quot;` //version2
+    Data         []byte `comment:&quot;The actual file data&quot;`
+    Flags        byte   `comment:&quot;boolean flags&quot;` //version2
+    NameSize     uint8  //version2
+    Name         []byte `comment:&quot;maximum 256 characters&quot;` //version2
+    MimeSize     uint8  //version2
+    Mime         []byte `comment:&quot;maximum 256 characters&quot;` //version2
+    PairsSize    uint16 //version2
+    Pairs        []byte `comment:&quot;additional name value pairs, json format, maximum 64kB&quot;`
+    LastModified uint64 //only store LastModifiedBytesLength bytes, which is 5 bytes to disk
+    Ttl          *TTL
+
+    Checksum CRC    `comment:&quot;CRC32 to check integrity&quot;`
+    Padding  []byte `comment:&quot;Aligned to 8 bytes&quot;`
+}
+</pre></div>
+</div>
+<p>可以看到，一个needle携带蛮多信息。除了本身的数据比如Data、Id、cookie之外，它还携带了额外的信息比如Mime、Pairs、ttl(time
+to live?)等等。看来，一个needle是元数据和数据的结合。</p>
+<p>看到这里，发现什么都不懂。那么，seaweedfs源码的第一步就从storage模块开始吧。</p>
+</div>
+<div class="section" id="storage">
+<h2>2.storage<a class="headerlink" href="#storage" title="永久链接至标题">¶</a></h2>
+<div class="section" id="needle-go">
+<h3>needle.go<a class="headerlink" href="#needle-go" title="永久链接至标题">¶</a></h3>
+<p>storage的目录结构如下：</p>
+<div class="code powershell highlight-default"><div class="highlight"><pre><span></span> <span class="n">D</span><span class="p">:</span>\<span class="n">Temp</span>\<span class="n">seaweedfs</span><span class="o">-</span><span class="n">master</span>\<span class="n">weed</span>\<span class="n">storage</span> <span class="n">的目录</span>
+
+<span class="mi">2017</span><span class="o">/</span><span class="mi">08</span><span class="o">/</span><span class="mi">04</span>  <span class="mi">12</span><span class="p">:</span><span class="mi">37</span>    <span class="o">&lt;</span><span class="n">DIR</span><span class="o">&gt;</span>          <span class="o">.</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">08</span><span class="o">/</span><span class="mi">04</span>  <span class="mi">12</span><span class="p">:</span><span class="mi">37</span>    <span class="o">&lt;</span><span class="n">DIR</span><span class="o">&gt;</span>          <span class="o">..</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">4</span><span class="p">,</span><span class="mi">682</span> <span class="n">compact_map</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">533</span> <span class="n">crc</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">4</span><span class="p">,</span><span class="mi">432</span> <span class="n">disk_location</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">218</span> <span class="n">file_id</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">08</span><span class="o">/</span><span class="mi">04</span>  <span class="mi">12</span><span class="p">:</span><span class="mi">37</span>    <span class="o">&lt;</span><span class="n">DIR</span><span class="o">&gt;</span>          <span class="n">needle</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">6</span><span class="p">,</span><span class="mi">641</span> <span class="n">needle</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">232</span> <span class="n">needle_byte_cache</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">3</span><span class="p">,</span><span class="mi">090</span> <span class="n">needle_map</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">4</span><span class="p">,</span><span class="mi">247</span> <span class="n">needle_map_boltdb</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">3</span><span class="p">,</span><span class="mi">807</span> <span class="n">needle_map_leveldb</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">3</span><span class="p">,</span><span class="mi">423</span> <span class="n">needle_map_memory</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">8</span><span class="p">,</span><span class="mi">831</span> <span class="n">needle_read_write</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">182</span> <span class="n">needle_test</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">179</span> <span class="n">replica_placement</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">313</span> <span class="n">replica_placement_test</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">9</span><span class="p">,</span><span class="mi">740</span> <span class="n">store</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">474</span> <span class="n">store_vacuum</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">3</span><span class="p">,</span><span class="mi">041</span> <span class="n">volume</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">996</span> <span class="n">volume_checking</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">367</span> <span class="n">volume_create</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">438</span> <span class="n">volume_create_linux</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">356</span> <span class="n">volume_id</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">581</span> <span class="n">volume_info</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">303</span> <span class="n">volume_info_test</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">3</span><span class="p">,</span><span class="mi">471</span> <span class="n">volume_loading</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">6</span><span class="p">,</span><span class="mi">815</span> <span class="n">volume_read_write</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">2</span><span class="p">,</span><span class="mi">267</span> <span class="n">volume_super_block</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">403</span> <span class="n">volume_super_block_test</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">7</span><span class="p">,</span><span class="mi">093</span> <span class="n">volume_sync</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">2</span><span class="p">,</span><span class="mi">394</span> <span class="n">volume_ttl</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">060</span> <span class="n">volume_ttl_test</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">9</span><span class="p">,</span><span class="mi">432</span> <span class="n">volume_vacuum</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>             <span class="mi">1</span><span class="p">,</span><span class="mi">713</span> <span class="n">volume_vacuum_test</span><span class="o">.</span><span class="n">go</span>
+<span class="mi">2017</span><span class="o">/</span><span class="mi">07</span><span class="o">/</span><span class="mi">28</span>  <span class="mi">23</span><span class="p">:</span><span class="mi">33</span>               <span class="mi">132</span> <span class="n">volume_version</span><span class="o">.</span><span class="n">go</span>
+</pre></div>
+</div>
+<p>接着上面对<code class="docutils literal"><span class="pre">needle.go</span></code>的阅读。在needle的结构声明后是一个简单的String函数，它的功能就是把needle的字段打印出来。接着是一个巨长的<code class="docutils literal"><span class="pre">ParseUpload</span></code>的函数，虽然这个函数有点长，大概八十行这样子。但是它的功能还是挺简单的，他负责分析http请求。它接受一个http请求，然后返回一个包含大部分needle字段信息的元组，它的签名如下：</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">ParseUpload</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="p">(</span>
+    <span class="n">fileName</span> <span class="n">string</span><span class="p">,</span>
+    <span class="n">data</span> <span class="p">[]</span><span class="n">byte</span><span class="p">,</span>
+    <span class="n">mimeType</span> <span class="n">string</span><span class="p">,</span>
+    <span class="n">pairMap</span> <span class="nb">map</span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="n">string</span><span class="p">,</span>
+    <span class="n">isGzipped</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">modifiedTime</span> <span class="n">uint64</span><span class="p">,</span>
+    <span class="n">ttl</span> <span class="o">*</span><span class="n">TTL</span><span class="p">,</span>
+    <span class="n">isChunkedFile</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">e</span> <span class="n">error</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>在接受到一个请求后，它首先分析请求头。把所有Seaweed-前缀的字段提取出来。再读取数据，值得注意的是数据的传送协议是<code class="docutils literal"><span class="pre">multipart/form-data</span></code>。</p>
+<p>接下来是新建needle的函数，它的目的是将请求中的字段赋值给新的needle。这部分用到的结构体方法定义在<code class="docutils literal"><span class="pre">needle_read_write.go</span></code>。</p>
+</div>
+<div class="section" id="needle-read-write-go">
+<h3>needle_read_write.go<a class="headerlink" href="#needle-read-write-go" title="永久链接至标题">¶</a></h3>
+<p>这部分定义了needle的一些关于读和写的方法。除了给needle结构体中赋值的方法外，剩下的方法都是关于needle如何操作io的。下面描述一下其中一个方法<code class="docutils literal"><span class="pre">Append</span></code>。</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>func (n *Needle) Append(w io.Writer, version Version) (size uint32, actualSize int64, err error) {
+    if s, ok := w.(io.Seeker); ok {
+        if end, e := s.Seek(0, 1); e == nil {
+            defer func(s io.Seeker, off int64) {
+                if err != nil {
+                    if _, e = s.Seek(off, 0); e != nil {
+                        glog.V(0).Infof(&quot;Failed to seek %s back to %d with error: %v&quot;, w, off, e)
+                    }
+                }
+            }(s, end)
+        } else {
+            err = fmt.Errorf(&quot;Cannot Read Current Volume Position: %v&quot;, e)
+            return
+        }
+    }
+
+··· ···
+</pre></div>
+</div>
+<p>首先，将Writer
+w通过类型断言转化Seeker。接着通过Seek方法从第0个字节开始读取数据，seek方法的两个参数分别代表偏移量和偏移起点，这里指的是从当前指针所在位置偏移0个字节。这里使用了设置匿名函数立即执行的方法，然后因为有defer修饰，所以是逆序立即执行。Seeker第二个参数有相应的常量</p>
+<blockquote>
+<div>SEEK_SET int = 0 //从文件的起始处开始设置 offset SEEK_CUR int = 1
+//从文件的指针的当前位置处开始设置 offset SEEK_END int = 2
+//从文件的末尾处开始设置 offset</div></blockquote>
+<p>接下来就是数据写入的过程了。不过奇怪的是weedfs居然有两个版本。</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span>    switch version {
+    case Version1:
+        header := make([]byte, NeedleHeaderSize)
+        util.Uint32toBytes(header[0:4], n.Cookie)
+        util.Uint64toBytes(header[4:12], n.Id)
+        n.Size = uint32(len(n.Data))
+        size = n.Size
+        util.Uint32toBytes(header[12:16], n.Size)
+        if _, err = w.Write(header); err != nil {
+            return
+        }
+        if _, err = w.Write(n.Data); err != nil {
+            return
+        }
+        actualSize = NeedleHeaderSize + int64(n.Size)
+        padding := NeedlePaddingSize - ((NeedleHeaderSize + n.Size + NeedleChecksumSize) % NeedlePaddingSize)
+        util.Uint32toBytes(header[0:NeedleChecksumSize], n.Checksum.Value())
+        _, err = w.Write(header[0 : NeedleChecksumSize+padding])
+        return
+    case Version2:
+        header := make([]byte, NeedleHeaderSize)
+        util.Uint32toBytes(header[0:4], n.Cookie)
+        util.Uint64toBytes(header[4:12], n.Id)
+        n.DataSize, n.NameSize, n.MimeSize = uint32(len(n.Data)), uint8(len(n.Name)), uint8(len(n.Mime))
+        if n.DataSize &gt; 0 {
+··· ···
+</pre></div>
+</div>
+<p>就功能上来说，两个版本的作用都是一样的。因此在这里只分析第一个版本。它首先根据header大小(这里是16字节)分配了一块内存，然后逐个将needle的字段转为字节码。最后写进去，末尾会有校验验证，如果前面写失败的话会重试。</p>
+<p>剩下的就是跟读写操作相关的函数了。</p>
+</div>
+<div class="section" id="needle-map">
+<h3>needle_map<a class="headerlink" href="#needle-map" title="永久链接至标题">¶</a></h3>
+<p>这部分由好几个文件构成，分别是基本数据结构<code class="docutils literal"><span class="pre">needle_map</span></code>和几个实例比如<code class="docutils literal"><span class="pre">needle_map_leveldb</span></code>等等。这部分主要是定义了NeedleMapper这个接口和baseNeedleMapper、mapMetric这两个结构。关于map的作用，目前我的理解还只是停留在论文的解释中。</p>
+<blockquote>
+<div>每个Store机器管理多个物理卷。每个物理卷存有百万张图片。读者可以将一个物理卷想象为一个非常大的文件（100GB），保存为<code class="docutils literal"><span class="pre">/hay/haystack&lt;logical</span> <span class="pre">volume</span> <span class="pre">id&gt;</span></code>。Store机器仅需要逻辑卷ID和文件offset就能非常快的访问一个图片。这是Haystack设计的主旨：不需要磁盘操作就可以检索文件名、偏移量、文件大小等元数据。Store机器会将其下所有物理卷的文件描述符（open的文件“句柄”，卷的数量不多，数据量不大）缓存在内存中。同时，图片ID到文件系统元数据（文件、偏移量、大小等）的映射（后文简称为“内存中映射”）是检索图片的重要条件，也会全部缓存在内存中。为了快速的检索needle，Store机器需要为每个卷维护一个内存中的key-value映射。映射的Key就是（needle.key+needle.alternate_key）的组合，映射的Value就是needle的flag、size、卷offset（都以byte为单位）。如果Store机器崩溃、重启，它可以直接分析卷文件来重新构建这个映射（构建完成之前不处理请求）。</div></blockquote>
+<p>由上可知，map的存在是为了让涉及到元数据的操作不经过磁盘操作，因此map的作用是为了把元数据存储到本地的数据库上。</p>
+</div>
+<div class="section" id="volume">
+<h3>Volume<a class="headerlink" href="#volume" title="永久链接至标题">¶</a></h3>
+<p>Volume就是物理卷了，它的结构如下：</p>
+<div class="code go highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Volume</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="n">Id</span>            <span class="n">VolumeId</span>
+    <span class="nb">dir</span>           <span class="n">string</span>
+    <span class="n">Collection</span>    <span class="n">string</span>
+    <span class="n">dataFile</span>      <span class="o">*</span><span class="n">os</span><span class="o">.</span><span class="n">File</span>
+    <span class="n">nm</span>            <span class="n">NeedleMapper</span>
+    <span class="n">needleMapKind</span> <span class="n">NeedleMapType</span>
+    <span class="n">readOnly</span>      <span class="nb">bool</span>
+
+    <span class="n">SuperBlock</span>
+
+    <span class="n">dataFileAccessLock</span> <span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span>
+    <span class="n">lastModifiedTime</span>   <span class="n">uint64</span> <span class="o">//</span><span class="n">unix</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">seconds</span>
+
+    <span class="n">lastCompactIndexOffset</span> <span class="n">uint64</span>
+    <span class="n">lastCompactRevision</span>    <span class="n">uint16</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>除了基本的信息外，每一个Volume都有一个NeedleMapper。这也证实了每一个卷负责维护该卷上文件的元数据。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Starry</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../days/index.html">日报</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">输出</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">输出</a><ul>
+      <li>Previous: <a href="openstack storlet简单介绍.html" title="上一章">openstack storlet简单介绍</a></li>
+      <li>Next: <a href="seaweedfs源码阅读(二).html" title="下一章">seaweedfs源码阅读(二)</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, daqu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/outputs/seaweedfs源码阅读(一).rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
