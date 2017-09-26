@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>SDS原型(二) 日报 &#8212; Starry 0.0.1 文档</title>
+    <title>SDS原型（二） &#8212; Starry 0.0.1 文档</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -25,7 +25,7 @@
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
     <link rel="next" title="curl操作storlet" href="curl操作storlet.html" />
-    <link rel="prev" title="SDS原型(三) 日报" href="SDS原型(三).html" />
+    <link rel="prev" title="SDS原型(三)" href="SDS原型(三).html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -42,22 +42,19 @@
           <div class="body" role="main">
             
   <div class="section" id="sds">
-<h1>SDS原型(二) 日报<a class="headerlink" href="#sds" title="永久链接至标题">¶</a></h1>
-</div>
-<div class="section" id="id1">
-<h1>SDS原型（二）<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<h1>SDS原型（二）<a class="headerlink" href="#sds" title="永久链接至标题">¶</a></h1>
 <div class="section" id="sds-vs">
 <h2>SDS VS 对象存储<a class="headerlink" href="#sds-vs" title="永久链接至标题">¶</a></h2>
 <p>前面提到笔者的一个观点：凡是实现了restful接口的对象存储系统都可以看成是SDS的存储系统。那么，为什么要在对象存储上进行SDS的实践呢？如何实践？好处是什么？</p>
-<div class="section" id="id2">
-<h3>为什么<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<div class="section" id="id1">
+<h3>为什么<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h3>
 <p>在笔者看来，SDS代表一种架构，其目的是为了实现存储层次的控制和数据分离。前面说实现restful接口的对象存储可以看成是SDS系统，如果再详细一点可以说是提供restful接口的对象存储系统已经包含SDS的思想，但是从功能、架构上说还不是SDS架构。从功能上说，并没有给用户提供清晰的控制功能。从架构上看，目前对象存储的各模块基本都是基于功能的不同而划分的。</p>
 <p>举个例子，openstack
 swift的功能主要是关于文件的读取比如增删查改，关于文件控制的功能目前它只是提供了一个中间件机制来对请求进行过滤。如果把一个系统的各功能代码量所占总代码用百分比来描述这个功能所受重视程度的话，那么swift中控制部分的百分比是低于数据部分的。但是SDS提倡控制和数据分离，为什么要分离，因为要做更多的控制，为什么要做更多的控制，因为要提供更好的使用体验和更高的开发效率。也就是说，目前的对象存储或多或少地提供了控制层的功能，但是这距离SDS对控制的要求还有一定的距离。</p>
 <p>因此，笔者说要在对象存储上实践SDS的目的是增强对象存储的控制层的功能。</p>
 </div>
-<div class="section" id="id3">
-<h3>目前已经有的SDS方案<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<div class="section" id="id2">
+<h3>目前已经有的SDS方案<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
 <p>何谓实践?在it领域，就是将一套方案应用到某个业务场景中。那么，目前有哪些已经实现的SDS方案呢？(特指基于管理的SDS)</p>
 <p>1.IOflow</p>
 <p>早期的SDS原型，环境是windows。但是没有后续工作</p>
@@ -76,8 +73,8 @@ node的配置文件里面都有一个<code class="docutils literal"><span class=
 pipeline的crystal的中间件拦截。等到控制层的crystal执行完之后再将请求发到下一个中间件。</p>
 <p>通过这种机制，crystal可以实现一些原本文件系统无法实现的功能，比如将文件先压缩再存储，先解压再读取。</p>
 </div>
-<div class="section" id="id4">
-<h3>SDS的好处<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<div class="section" id="id3">
+<h3>SDS的好处<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
 <p>SDS的好处是什么呢，提高了使用体验。举个例子，比如扫地，一个完整的步骤拿起扫把-&gt;逐个房间清扫-&gt;倒垃圾-&gt;放好工具。在这里，有一个叫做crystal的扫地机器人，如果使用crystal来扫地，那么整个过程就变成拿出crystal-&gt;按下扫地开关-&gt;关掉crystal-&gt;倒垃圾-&gt;放好crystal。</p>
 <p>对于用户来说，这极大地提升了扫地体验。因为原来需要一个个房间地走动，但是得益于crystal，现在这个步骤省去了。</p>
 <p>然而，就这个扫地的过程来说。整个过程其实变得复杂了，因为crystal在扫地的时候需要动态的判断障碍，动态改变路线。这个过程需要极大的计算量。</p>
@@ -85,8 +82,8 @@ pipeline的crystal的中间件拦截。等到控制层的crystal执行完之后�
 <p>SDS也是如此，它提高了项目的规模，但却能带来更清晰易懂的架构和更好的用户体验。</p>
 </div>
 </div>
-<div class="section" id="id5">
-<h2>目前SDS方案的不足<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id4">
+<h2>目前SDS方案的不足<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
 <p>1.ioflow</p>
 <p>基于文件系统，实现控制层的开销过大</p>
 <p>2.swift</p>
@@ -96,8 +93,8 @@ pipeline的crystal的中间件拦截。等到控制层的crystal执行完之后�
 <p>4.seaweedfs</p>
 <p>缺少控制层</p>
 </div>
-<div class="section" id="id6">
-<h2>聚焦的问题<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id5">
+<h2>聚焦的问题<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
 <p>笔者发现，在对象存储中。一个请求-响应的过程可以分为</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">start</span>
 <span class="c1"># 网络</span>
@@ -146,7 +143,7 @@ pipeline的crystal的中间件拦截。等到控制层的crystal执行完之后�
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">输出</a><ul>
-      <li>Previous: <a href="SDS原型(三).html" title="上一章">SDS原型(三) 日报</a></li>
+      <li>Previous: <a href="SDS原型(三).html" title="上一章">SDS原型(三)</a></li>
       <li>Next: <a href="curl操作storlet.html" title="下一章">curl操作storlet</a></li>
   </ul></li>
   </ul></li>
