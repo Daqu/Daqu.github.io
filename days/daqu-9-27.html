@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>日报 &#8212; Starry 0.0.1 文档</title>
+    <title>daqu-9-27 日报 &#8212; Starry 0.0.1 文档</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="../_static/translations.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="2017年7月" href="17-07/index.html" />
-    <link rel="prev" title="钟俊的博客" href="../index.html" />
+    <link rel="next" title="daqu-9-5 日报" href="daqu-9-5.html" />
+    <link rel="prev" title="daqu-9-26 日报" href="daqu-9-26.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -41,30 +41,25 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="id1">
-<h1>日报<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="17-07/index.html">2017年7月</a></li>
-<li class="toctree-l1"><a class="reference internal" href="17-08/index.html">2017年8月</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-10.html">daqu-9-10 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-11.html">daqu-9-11 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-12.html">daqu-9-12 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-13.html">daqu-9-13 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-14.html">daqu-9-14 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-15.html">daqu-9-15 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-19.html">daqu-9-19 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-20.html">daqu-9-20 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-21.html">daqu-9-21 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-22.html">daqu-9-22 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-23.html">daqu-9-23 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-25.html">daqu-9-25 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-26.html">daqu-9-26 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-27.html">daqu-9-27 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-5.html">daqu-9-5 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-6.html">daqu-9-6 日报</a></li>
-<li class="toctree-l1"><a class="reference internal" href="daqu-9-7.html">daqu-9-7 日报</a></li>
-</ul>
+  <div class="section" id="daqu-9-27">
+<h1>daqu-9-27 日报<a class="headerlink" href="#daqu-9-27" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>过程<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li>重构一下小文件存储的中间件(遇到并修复了一些bug)</li>
+<li>上传小文件应该返回seaweed的响应(实现)</li>
+<li>完成了小文件上传部分的调试(即小文件上传功能完成)</li>
+<li>在尝试调试小文件下载部分时发现没有处理fid
+<strong>因为GET请求或者是DELETE请求时需要把fid作为uri附加到请求地址中去</strong>
+–&gt; 解决方法:引入路由模块</li>
+</ol>
+</div>
+<div class="section" id="id2">
+<h2>下一步计划<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li>开始调试下载部分代码</li>
+<li>引入路由模块，因为它是调试下载部分代码的前提</li>
+</ol>
 </div>
 </div>
 
@@ -85,7 +80,7 @@
 
 <h3>导航</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">日报</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">日报</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../outputs/index.html">输出</a></li>
 </ul>
 
@@ -93,8 +88,10 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../index.html" title="上一章">钟俊的博客</a></li>
-      <li>Next: <a href="17-07/index.html" title="下一章">2017年7月</a></li>
+  <li><a href="index.html">日报</a><ul>
+      <li>Previous: <a href="daqu-9-26.html" title="上一章">daqu-9-26 日报</a></li>
+      <li>Next: <a href="daqu-9-5.html" title="下一章">daqu-9-5 日报</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -120,7 +117,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="../_sources/days/index.rst.txt"
+      <a href="../_sources/days/daqu-9-27.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
