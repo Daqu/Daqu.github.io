@@ -20,3 +20,4 @@
 - <a href="/#/days/2017/09/daqu-9-26">daqu 9-26 日报</a>
 - <a href="/#/days/2017/09/daqu-9-27">daqu 9-27 日报</a>
 - <a href="/#/days/2017/09/daqu-9-28">daqu 9-28 日报</a>
+- <a href="/#/days/2017/09/daqu-9-29">daqu 9-29 日报</a>
