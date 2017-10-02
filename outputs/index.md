@@ -14,3 +14,4 @@
 - <a href="/#/outputs/将seaweedfs变成SDS的思路">将seaweedfs变成SDS的思路</a>
 - <a href="/#/outputs/如何将http请求转化为ssh请求">如何将http请求转化为ssh请求</a>
 - <a href="/#/outputs/使用elixir来开发一个分布式存储系统">使用elixir来开发一个分布式存储系统</a>
+- <a href="/#/outputs/高级消息队列协议在sds中的应用的思路">高级消息队列协议在sds中的应用的思路</a>
