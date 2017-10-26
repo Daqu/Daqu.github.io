@@ -12,5 +12,6 @@
 - <a href="/#/days/2017/10/daqu-10-16">daqu-10-16 日报</a>
 - <a href="/#/days/2017/10/daqu-10-18">daqu-10-18 日报</a>
 - <a href="/#/days/2017/10/daqu-10-24">daqu-10-24 日报</a>
+- <a href="/#/days/2017/10/daqu-10-26">daqu-10-26 日报</a>
 
 
